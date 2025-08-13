@@ -1,0 +1,281 @@
+# Blockchain Research Application - Cursor Rules
+# Comprehensive development guidelines for maintaining code quality and consistency
+
+## 🏗️ ARCHITECTURE PRINCIPLES
+
+### Project Structure
+- Follow modular architecture: `services/`, `components/`, `utils/`, `styles/`
+- Keep L1 protocol focus: Ethereum, Bitcoin, Tron, BSC, Base only
+- Maintain clear separation of concerns between data, logic, and presentation
+
+### Real-Time Data Philosophy
+- ALL dynamic data must come from live APIs (fees, prices, market caps, network activity)
+- Static data only for constants (consensus mechanisms, block times, security scores)
+- Implement fallback values for API failures
+- Cache API responses with 5-minute TTL
+
+## 📊 DATA HANDLING STANDARDS
+
+### Real-Time API Integration
+```python
+# REQUIRED: Always fetch live data for volatile metrics
+def get_protocol_data(protocol_id: str):
+    # ✅ Good: Live market data
+    market_cap = fetch_from_coingecko_api(protocol_id)
+    current_price = get_live_price(protocol_id)
+    
+    # ✅ Good: Static constants
+    consensus = "Proof of Stake"  # Rarely changes
+    
+    # ❌ Bad: Hardcoded dynamic values
+    # market_cap = 280000000000  # DON'T DO THIS
+```
+
+### Fee Calculations
+- Always calculate fees: `(gas_price_gwei * gas_limit * token_price_usd) / 1e9`
+- Use realistic fallback gas prices: ETH=12 gwei, BSC=5 gwei, TRON=0.001
+- Include data source indicators: `'data_source': 'etherscan'` vs `'fallback'`
+
+### Error Handling
+```python
+# REQUIRED: Robust API error handling
+try:
+    data = api_call()
+    if not data:
+        return get_fallback_data()
+except Exception as e:
+    st.warning(f"API error: {str(e)}")
+    return get_fallback_data()
+```
+
+## 🎨 STREAMLIT UI STANDARDS
+
+### Table Rendering
+```python
+# ✅ Good: Native Streamlit markdown tables
+def render_response(content: str):
+    if '|' in content and '---' in content:
+        st.markdown(content)  # Handles emojis, formatting automatically
+    
+# ❌ Bad: Complex pandas parsing that breaks emojis
+# Don't over-complicate table rendering
+```
+
+### Response Format Requirements
+- Use emoji rankings: 🥇🥈🥉4️⃣5️⃣
+- Include live timestamps: "Updated 14:30 UTC"
+- Show current vs max metrics: "12/15 TPS (80%)"
+- Display network status: "Smart Contracts (Low congestion)"
+
+### User Experience
+- Responses must be in table format (never bullet points)
+- Include comprehensive network activity data
+- Show real-time cost comparisons with live calculations
+- Add "powered by live APIs" disclaimers
+
+## 💻 CODE STYLE & FORMATTING
+
+### Python Standards
+```python
+# File headers
+"""
+Service for blockchain research - specific purpose description
+Clean implementation following real-time data principles
+"""
+
+# Import order
+import standard_library
+import third_party
+from local_modules import custom
+
+# Function documentation
+def get_realtime_data(protocol_id: str) -> Dict:
+    """
+    Get comprehensive real-time data for L1 protocol
+    
+    Args:
+        protocol_id: Protocol identifier (ethereum, bitcoin, etc.)
+        
+    Returns:
+        Dict with live fees, TPS, market data, network activity
+    """
+```
+
+### Variable Naming
+- Use descriptive names: `ethereum_gas_price_gwei` not `gas`
+- API sources: `coingecko_data`, `etherscan_response`
+- Time-based: `last_updated`, `cache_ttl`, `api_timeout`
+
+### Function Organization
+```python
+# Public API methods first
+def get_live_data() -> Dict:
+    pass
+
+# Private helper methods
+def _fetch_api_data() -> Dict:
+    pass
+
+def _calculate_fees() -> float:
+    pass
+```
+
+## 🔌 API INTEGRATION RULES
+
+### Multi-Source Strategy
+```python
+# REQUIRED: Multiple API sources for reliability
+def get_gas_data():
+    # Try primary API
+    etherscan_data = try_etherscan_api()
+    if etherscan_data:
+        return etherscan_data
+    
+    # Try backup API
+    blocknative_data = try_blocknative_api()
+    if blocknative_data:
+        return blocknative_data
+        
+    # Final fallback
+    return get_realistic_fallback()
+```
+
+### API Response Processing
+- Extract relevant data immediately: `gas_price = response['result']['ProposeGasPrice']`
+- Convert units consistently: gwei to USD, wei to ETH
+- Add metadata: `'source': 'etherscan'`, `'timestamp': datetime.now()`
+
+### Rate Limiting & Caching
+```python
+# REQUIRED: Implement caching for API responses
+@cached_with_ttl(300)  # 5 minutes
+def fetch_protocol_data():
+    return api_call()
+```
+
+## 📱 L1 PROTOCOL SPECIFICATIONS
+
+### Supported Protocols
+1. **Ethereum (ETH)** - Smart contract leader
+2. **Bitcoin (BTC)** - Store of value  
+3. **Tron (TRX)** - Payment/gaming focus
+4. **BSC (BNB)** - High-performance apps
+5. **Base (ETH)** - Consumer L2
+
+### Protocol Data Requirements
+```python
+REQUIRED_LIVE_DATA = [
+    'avg_fee',           # From gas APIs + price APIs
+    'current_price',     # From CoinGecko
+    'market_cap',        # From CoinGecko  
+    'volume_24h',        # From CoinGecko
+    'active_addresses_24h',  # From blockchain APIs
+    'transactions_24h',  # From blockchain APIs
+    'network_congestion' # Calculated from gas prices
+]
+
+STATIC_DATA = [
+    'consensus',         # PoS, PoW, DPoS
+    'block_time',        # Seconds
+    'security_score',    # 0-100 rating
+    'finality_time'      # Seconds to finality
+]
+```
+
+## 🚫 ANTI-PATTERNS TO AVOID
+
+### Don't Do These
+```python
+# ❌ Hardcoded dynamic values
+ETHEREUM_FEE = 4.20  # This becomes outdated!
+
+# ❌ ElizaOS dependencies (removed)
+# from elizaos import chat  # Don't add back
+
+# ❌ DeFi content (removed from scope)
+# defi_protocols = [...]  # Focus on L1 only
+
+# ❌ Complex table parsing
+# df = pd.DataFrame(complex_parsing)  # Use simple st.markdown
+
+# ❌ Missing error handling
+# data = api_call()  # What if it fails?
+
+# ❌ No fallback data
+# return None  # Always provide fallback
+```
+
+### Response Format Don'ts
+- Never return bullet points instead of tables
+- Never show $0.00 or $0.000 values
+- Never use outdated static fee values
+- Never omit emoji rankings or protocol names
+- Never skip network activity data
+
+## ✅ TESTING & VALIDATION
+
+### Required Checks
+```python
+# Test real-time data integration
+def test_live_data():
+    data = get_live_protocol_data('ethereum')
+    assert data['avg_fee'] > 0  # Never $0.00
+    assert 'last_updated' in data
+    assert 'data_source' in data
+
+# Test table rendering
+def test_table_format():
+    response = ai_service.get_chat_response('lowest fee', [])
+    assert 'LIVE DATA ANALYSIS' in response
+    assert '🥇' in response  # Emoji rankings
+    assert '|' in response   # Table format
+    assert 'Updated' in response  # Timestamp
+```
+
+### Integration Validation
+- All API calls must have timeout (10s max)
+- All responses must include data source tracking
+- All fees must be calculated from live gas + price data
+- All tables must render with proper formatting
+
+## 📝 DOCUMENTATION STANDARDS
+
+### Code Comments
+```python
+# REQUIRED: Explain WHY, not WHAT
+def calculate_fee(gas_gwei: float, eth_price: float) -> float:
+    # Standard ETH transfer uses 21,000 gas units
+    # Formula: (gas_price_gwei * 21000 * eth_price_usd) / 1e9
+    return (gas_gwei * 21000 * eth_price) / 1e9
+```
+
+### API Documentation
+- Document all API endpoints used
+- Include fallback behavior explanation  
+- Note rate limits and authentication requirements
+
+## 🔄 MAINTENANCE GUIDELINES
+
+### Regular Updates
+- Monitor API endpoint changes monthly
+- Update fallback values based on market conditions
+- Review gas price estimates quarterly
+- Validate all L1 protocol data accuracy
+
+### Performance Monitoring
+- Track API response times
+- Monitor cache hit rates
+- Check for $0.00 fee incidents
+- Validate table rendering across queries
+
+---
+
+## 🎯 KEY SUCCESS METRICS
+
+1. **No $0.00 fees**: All protocols show realistic fees
+2. **Table format**: All responses in proper table format with emojis
+3. **Live data**: All dynamic metrics from real-time APIs
+4. **Fast responses**: < 3 second response time with caching
+5. **Reliable**: Graceful fallback when APIs fail
+
+Follow these rules to maintain high-quality, real-time blockchain research application with accurate L1 protocol data and excellent user experience.
