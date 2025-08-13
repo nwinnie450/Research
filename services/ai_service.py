@@ -17,7 +17,12 @@ class AIService:
         
         # Initialize custom agent if enabled
         if self.use_custom_agent:
-            self.custom_agent = CustomBlockchainAIAgent()
+            try:
+                self.custom_agent = CustomBlockchainAIAgent()
+            except Exception as e:
+                # Fallback to basic responses if custom agent fails
+                self.custom_agent = None
+                self.use_custom_agent = False
         else:
             self.custom_agent = None
         
