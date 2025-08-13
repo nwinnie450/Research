@@ -7,7 +7,6 @@ import pandas as pd
 import re
 from typing import List, Dict
 from services.ai_service import AIService
-from services.blockchain_service import BlockchainService
 from utils.session_manager import update_search_filter
 
 def render_chat_interface():
@@ -18,7 +17,6 @@ def render_chat_interface():
     
     # Initialize services
     ai_service = AIService()
-    blockchain_service = BlockchainService()
     
     # Chat container
     chat_container = st.container()
@@ -28,7 +26,7 @@ def render_chat_interface():
         display_chat_history()
     
     # Chat input section
-    render_chat_input(ai_service, blockchain_service)
+    render_chat_input(ai_service)
     
     # Suggested queries section
     render_suggested_queries()
@@ -40,17 +38,17 @@ def display_chat_history():
         # Welcome message
         st.markdown("""
         <div class="chat-message bot-message">
-            <strong>🤖 AI Advisor:</strong> Hello! I'm your L1 blockchain research specialist. 
-            I focus on the top 5 L1 protocols: <strong>Ethereum, Base, Tron, BSC, and Bitcoin</strong>.
+            <strong>🤖 AI Advisor:</strong> Hello! I'm your blockchain research specialist focusing on 
+            <strong>Improvement Proposals</strong> and <strong>L1 Protocol Analysis</strong>.
             <br><br>
-            You can ask me questions like:
+            I can help you with:
             <ul>
-                <li>"Which L1 has the lowest fees?"</li>
-                <li>"Compare Ethereum vs Bitcoin for enterprise"</li>
-                <li>"What's the best L1 for gaming: Tron or BSC?"</li>
-                <li>"Base vs Ethereum for consumer apps"</li>
+                <li><strong>Proposals:</strong> "Show me latest TIPs in draft", "EIPs in production"</li>
+                <li><strong>L1 Performance:</strong> "Compare TPS across L1 protocols"</li>
+                <li><strong>Protocol Analysis:</strong> "Ethereum vs Tron transaction costs"</li>
+                <li><strong>Technical Research:</strong> "Bitcoin vs BSC consensus mechanisms"</li>
             </ul>
-            What L1 protocol question can I help you with?
+            What would you like to research today?
         </div>
         """, unsafe_allow_html=True)
     
@@ -125,7 +123,7 @@ def render_fee_comparison_tables(content: str):
 Would you like a detailed breakdown for any specific protocol or use case?
     """)
 
-def render_chat_input(ai_service: AIService, blockchain_service: BlockchainService):
+def render_chat_input(ai_service: AIService):
     """Render chat input and handle user messages"""
     
     # Pre-fill with use case if selected
@@ -134,42 +132,44 @@ def render_chat_input(ai_service: AIService, blockchain_service: BlockchainServi
     
     if st.session_state.selected_use_case:
         use_case = st.session_state.selected_use_case
-        placeholder_text = f"Finding best L1 protocols for {use_case}..."
-        if use_case == "gaming":
-            initial_query = "Which L1 protocol is best for gaming: Ethereum, Base, Tron, BSC, or Bitcoin?"
-        elif use_case == "payments":
-            initial_query = "Which L1 is best for payments: Tron, Base, BSC, Ethereum, or Bitcoin?"
-        elif use_case == "enterprise":
-            initial_query = "Compare Ethereum, Bitcoin, Base, BSC, and Tron for enterprise use"
+        if use_case == "eips":
+            placeholder_text = "Fetching latest Ethereum Improvement Proposals..."
+            initial_query = "Show me the latest EIPs with their status"
+        elif use_case == "l1_performance":
+            placeholder_text = "Comparing L1 protocol performance..."
+            initial_query = "Compare the performance of major L1 protocols: Ethereum, Bitcoin, Tron, BSC, and Base"
+        else:
+            placeholder_text = f"Researching {use_case}..."
+            initial_query = f"Tell me about {use_case}"
         
         # Reset the use case selection
         st.session_state.selected_use_case = None
     
-    # Chat input with dynamic key to clear after send
-    input_key = f"chat_input_{getattr(st.session_state, 'chat_input_counter', 0)}"
-    user_input = st.text_input(
-        "Your question:",
-        value=initial_query,
-        placeholder=placeholder_text,
-        key=input_key,
-        help="Ask me anything about blockchain protocols!"
-    )
+    # Chat input with form for Enter key support
+    with st.form(key="chat_form", clear_on_submit=True):
+        col1, col2 = st.columns([4, 1])
+        
+        with col1:
+            user_input = st.text_input(
+                "Your question:",
+                value=initial_query,
+                placeholder=placeholder_text,
+                label_visibility="collapsed",
+                help="Type your question and press Enter or click Send"
+            )
+        
+        with col2:
+            send_button = st.form_submit_button("Send 🚀", type="primary", use_container_width=True)
     
-    col1, col2 = st.columns([3, 1])
-    
-    with col2:
-        send_button = st.button("Send 🚀", type="primary", use_container_width=True)
-    
-    # Process user input
-    if send_button and user_input.strip():
-        # Clear the input by incrementing counter for next render
-        st.session_state.chat_input_counter = getattr(st.session_state, 'chat_input_counter', 0) + 1
-        process_user_message(user_input, ai_service, blockchain_service)
-        st.rerun()
-    elif send_button and not user_input.strip():
-        st.warning("Please enter a question or message.")
+    # Process user input when form is submitted (Enter key or Send button)
+    if send_button:
+        if user_input.strip():
+            process_user_message(user_input, ai_service)
+            st.rerun()
+        else:
+            st.warning("Please enter a question or message.")
 
-def process_user_message(user_input: str, ai_service: AIService, blockchain_service: BlockchainService):
+def process_user_message(user_input: str, ai_service: AIService):
     """Process user message and generate AI response"""
     
     # Add user message to history
@@ -312,26 +312,26 @@ def render_suggested_queries():
         if st.button("🎮 Best L1 for Gaming", use_container_width=True, key="gaming_query"):
             query = "Which L1 protocol is best for gaming: Ethereum, Base, Tron, BSC, or Bitcoin?"
             st.session_state.chat_input_counter = getattr(st.session_state, 'chat_input_counter', 0) + 1
-            process_user_message(query, AIService(), BlockchainService())
+            process_user_message(query, AIService())
             st.rerun()
         
         if st.button("🏢 Enterprise L1 Comparison", use_container_width=True, key="enterprise_query"):
             query = "Compare Ethereum, Bitcoin, Base, BSC, and Tron for enterprise use"
             st.session_state.chat_input_counter = getattr(st.session_state, 'chat_input_counter', 0) + 1
-            process_user_message(query, AIService(), BlockchainService())
+            process_user_message(query, AIService())
             st.rerun()
     
     with col2:
         if st.button("💰 Lowest L1 Fees", use_container_width=True, key="fees_query"):
             query = "Find the lowest fee L1 protocol among Ethereum, Base, Tron, BSC, Bitcoin"
             st.session_state.chat_input_counter = getattr(st.session_state, 'chat_input_counter', 0) + 1
-            process_user_message(query, AIService(), BlockchainService())
+            process_user_message(query, AIService())
             st.rerun()
         
         if st.button("💰 L1 Payment Solutions", use_container_width=True, key="payment_query"):
             query = "Which L1 is best for payments: Tron, Base, BSC, Ethereum, or Bitcoin?"
             st.session_state.chat_input_counter = getattr(st.session_state, 'chat_input_counter', 0) + 1
-            process_user_message(query, AIService(), BlockchainService())
+            process_user_message(query, AIService())
             st.rerun()
     
     # Clear chat button

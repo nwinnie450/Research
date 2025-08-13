@@ -6,23 +6,45 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from services.blockchain_service import BlockchainService
+# from services.blockchain_service import BlockchainService  # Removed - service deleted
+from services.live_l1_data_service import LiveL1DataService
 from typing import Dict, List
 
 def render_dashboard():
     """Render the main dashboard with protocol overview"""
     
-    blockchain_service = BlockchainService()
+    # Initialize live data service
+    live_data_service = LiveL1DataService()
     
     st.markdown("---")
     st.markdown("### 📊 Blockchain Protocol Overview")
     
-    # Get all protocol data
-    protocols = blockchain_service._fetch_protocol_data()
+    # Get all protocol data from live service
+    market_analysis = live_data_service.get_live_l1_market_analysis()
+    protocols_dict = market_analysis.get('protocols', {})
     
-    if not protocols:
+    if not protocols_dict:
         st.error("Unable to load blockchain data")
         return
+    
+    # Convert and map to format expected by existing functions
+    protocols = []
+    for protocol_id, data in protocols_dict.items():
+        mapped_protocol = {
+            'id': protocol_id,  # Add required id field
+            'name': data.get('name', protocol_id.title()),
+            'symbol': data.get('symbol', ''),
+            'tps': data.get('current_tps', 0),
+            'avg_fee': data.get('avg_fee_usd', 0),
+            'security_score': 100 if data.get('consensus') == 'Proof of Work' else 85,  # Simple mapping
+            'ecosystem_score': min(data.get('market_cap', 0) / 1e9 * 10, 100),  # Market cap based
+            'market_cap': data.get('market_cap', 0),
+            'type': 'Layer 1',
+            'description': f"{data.get('name', '')} - {data.get('consensus', '')} blockchain",
+            'suitable_for': ['DeFi', 'Payments'] if data.get('tvl', 0) > 0 else ['Payments'],
+            'active_developers': max(50, int(data.get('market_cap', 0) / 1e8))  # Estimate based on mcap
+        }
+        protocols.append(mapped_protocol)
     
     # Key metrics row
     render_key_metrics(protocols)
@@ -54,36 +76,32 @@ def render_key_metrics(protocols: List[Dict]):
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value">{}</div>
-            <div class="metric-label">Protocols Tracked</div>
-        </div>
-        """.format(total_protocols), unsafe_allow_html=True)
+        st.metric(
+            label="Protocols Tracked",
+            value=f"{total_protocols}",
+            help="Top 5 L1 protocols: Ethereum, Base, Tron, BSC, Bitcoin"
+        )
     
     with col2:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value">{:,.0f}</div>
-            <div class="metric-label">Avg TPS</div>
-        </div>
-        """.format(avg_tps), unsafe_allow_html=True)
+        st.metric(
+            label="Average TPS",
+            value=f"{avg_tps:,.0f}",
+            help="Average transactions per second across all protocols"
+        )
     
     with col3:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value">${:.4f}</div>
-            <div class="metric-label">Lowest Fee</div>
-        </div>
-        """.format(lowest_fee), unsafe_allow_html=True)
+        st.metric(
+            label="Lowest Fee",
+            value=f"${lowest_fee:.4f}",
+            help="Cheapest transaction fee among all protocols"
+        )
     
     with col4:
-        st.markdown("""
-        <div class="metric-card">
-            <div class="metric-value">{}/100</div>
-            <div class="metric-label">Top Security</div>
-        </div>
-        """.format(highest_security), unsafe_allow_html=True)
+        st.metric(
+            label="Top Security",
+            value=f"{highest_security}/100",
+            help="Highest security score among all protocols"
+        )
 
 def render_tps_comparison(protocols: List[Dict]):
     """Render TPS comparison chart"""
@@ -206,44 +224,37 @@ def render_protocol_card(protocol: Dict):
                 return "#DC2626"  # danger_red
         return "#6B7280"  # default gray
     
-    card_html = f"""
-    <div class="protocol-card">
-        <h4 style="margin-top: 0; color: #1E3A8A;">
-            {protocol['name']} ({protocol['symbol']})
-        </h4>
-        <p style="color: #6B7280; font-size: 0.9rem; margin-bottom: 1rem;">
-            {protocol.get('description', 'Leading blockchain protocol')}
-        </p>
+    # Use container and columns instead of HTML for better compatibility
+    with st.container():
+        # Protocol header
+        st.markdown(f"**{protocol['name']} ({protocol['symbol']})**")
+        st.caption(protocol.get('description', 'Leading blockchain protocol'))
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <span style="font-weight: 500;">TPS:</span>
-            <span style="color: {get_status_color('tps', tps)}; font-weight: 600;">{tps:,}</span>
-        </div>
+        # Metrics in columns
+        col1, col2 = st.columns(2)
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <span style="font-weight: 500;">Fee:</span>
-            <span style="color: {get_status_color('fee', fee)}; font-weight: 600;">${fee:.4f}</span>
-        </div>
+        with col1:
+            # TPS with color coding
+            tps_color = "🟢" if tps > 1000 else "🟡" if tps > 100 else "🔴"
+            st.metric("TPS", f"{tps:,}", delta=None)
+            
+            # Security score
+            sec_color = "🟢" if security > 85 else "🟡" if security > 70 else "🔴"
+            st.metric("Security", f"{security}/100", delta=None)
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <span style="font-weight: 500;">Security:</span>
-            <span style="color: {get_status_color('security', security)}; font-weight: 600;">{security}/100</span>
-        </div>
+        with col2:
+            # Fee with color coding  
+            fee_color = "🟢" if fee < 0.1 else "🟡" if fee < 1.0 else "🔴"
+            st.metric("Fee", f"${fee:.4f}", delta=None)
+            
+            # Type
+            st.metric("Type", protocol.get('type', 'Layer 1'), delta=None)
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-            <span style="font-weight: 500;">Type:</span>
-            <span style="color: #7C3AED;">{protocol.get('type', 'Layer 1')}</span>
-        </div>
+        # Best use cases
+        st.markdown(f"**Best for:** {', '.join(protocol.get('suitable_for', ['General use']))}")
         
-        <div style="margin-top: 1rem;">
-            <small style="color: #6B7280;">
-                Best for: {', '.join(protocol.get('suitable_for', ['General use']))}
-            </small>
-        </div>
-    </div>
-    """
-    
-    st.markdown(card_html, unsafe_allow_html=True)
+        # Add some spacing
+        st.markdown("---")
     
     if st.button(f"Analyze {protocol['name']}", key=f"analyze_{protocol['id']}", use_container_width=True):
         st.session_state.selected_protocol = protocol['id']

@@ -12,7 +12,7 @@ def render_sidebar():
         # Simple radio button navigation (fallback if streamlit-option-menu not available)
         selected = st.radio(
             "Choose a page:",
-            ["🏠 Home", "💬 Chat", "📊 Compare", "📈 Analytics", "🔍 Advanced"],
+            ["🏠 Home", "💬 Chat", "📊 Compare", "📈 Analytics", "📋 Proposals", "🔍 Advanced"],
             index=0,
             label_visibility="collapsed"
         )
@@ -21,18 +21,17 @@ def render_sidebar():
         st.markdown("---")
         st.markdown("### ⚡ Quick Actions")
         
-        if st.button("🎮 Find Gaming Chain", use_container_width=True):
-            st.session_state.selected_use_case = "gaming"
+        if st.button("📋 Latest TIPs", use_container_width=True):
+            st.session_state.current_page = "📋 Proposals"
+            selected = "📋 Proposals"
+        
+        if st.button("🔗 Latest EIPs", use_container_width=True):
+            st.session_state.selected_use_case = "eips"
             st.session_state.current_page = "💬 Chat"
             selected = "💬 Chat"
         
-        if st.button("🏦 DeFi Protocols", use_container_width=True):
-            st.session_state.selected_use_case = "defi"
-            st.session_state.current_page = "💬 Chat"
-            selected = "💬 Chat"
-        
-        if st.button("🏢 Enterprise Blockchain", use_container_width=True):
-            st.session_state.selected_use_case = "enterprise"
+        if st.button("⚡ L1 Performance Compare", use_container_width=True):
+            st.session_state.selected_use_case = "l1_performance"
             st.session_state.current_page = "💬 Chat"
             selected = "💬 Chat"
         
@@ -50,14 +49,19 @@ def render_sidebar():
         st.markdown("---")
         st.markdown("### ℹ️ About")
         st.markdown("""
-        **Blockchain Research AI Agent** helps you find the perfect blockchain protocol for your project using AI-powered analysis and real-time data.
+        **Top 5 L1 Protocol Research Hub** - Focused analysis of the leading blockchain protocols using AI-powered research and live data.
+        
+        **Protocols:**
+        - 🟠 **Bitcoin** - Original blockchain
+        - 🔵 **Ethereum** - Smart contract leader  
+        - ⚡ **Base** - Coinbase L2 solution
+        - 🟡 **Tron** - High-speed transactions
+        - 🟨 **BSC** - Binance ecosystem
         
         **Features:**
-        - 🤖 AI-powered recommendations
-        - 📊 Real-time blockchain data
-        - 🔍 Advanced filtering
-        - 📈 Interactive comparisons
-        - 📱 Mobile-responsive design
+        - 📋 Live improvement proposals
+        - 📊 Real-time performance data
+        - 🔗 Protocol comparisons
         """)
         
         # Update session state

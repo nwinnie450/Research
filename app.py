@@ -19,6 +19,7 @@ from components.chat_interface import render_chat_interface
 from components.dashboard import render_dashboard
 from components.comparison import render_comparison
 from components.analytics import render_analytics
+from components.proposals import render_proposals_interface
 from styles.custom_css import load_custom_css
 
 def main():
@@ -53,6 +54,8 @@ def main():
             render_comparison()
         elif selected_page == "📈 Analytics": 
             render_analytics()
+        elif selected_page == "📋 Proposals":
+            render_proposals_interface()
         elif selected_page == "🔍 Advanced":
             render_advanced_search()
         else:
@@ -66,34 +69,34 @@ def render_home_page():
     st.markdown("""
     <div class="hero-section">
         <h1 style="text-align: center; color: #1E3A8A; margin-bottom: 0.5rem;">
-            Find Your Perfect L1 Blockchain Protocol
+            Top 5 L1 Blockchain Protocol Analysis
         </h1>
         <p style="text-align: center; color: #6B7280; font-size: 1.2rem; margin-bottom: 2rem;">
-            AI-powered analysis of Ethereum, Base, Tron, BSC & Bitcoin
+            <strong>Ethereum • Base • Tron • BSC • Bitcoin</strong><br>
+            AI-powered research with live data & improvement proposals
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Quick action cards focused on L1 protocols
-    st.markdown("### 🚀 Quick Start - L1 Protocol Analysis")
+    # Quick action cards focused on Improvement Proposals and L1 protocols
+    st.markdown("### 🚀 Quick Start - Improvement Proposals & L1 Analysis")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("🎮 L1 Gaming Analysis", use_container_width=True):
-            st.session_state.selected_use_case = "gaming"
-            st.session_state.current_page = "💬 Chat"
+        if st.button("📋 Browse TIPs", use_container_width=True):
+            st.session_state.current_page = "📋 Proposals"
             st.rerun()
     
     with col2:
-        if st.button("💰 L1 Payment Solutions", use_container_width=True):
-            st.session_state.selected_use_case = "payments"
+        if st.button("🔗 Latest EIPs", use_container_width=True):
+            st.session_state.selected_use_case = "eips"
             st.session_state.current_page = "💬 Chat"
             st.rerun()
     
     with col3:
-        if st.button("🏢 L1 Enterprise Analysis", use_container_width=True):
-            st.session_state.selected_use_case = "enterprise"
+        if st.button("⚡ L1 Performance", use_container_width=True):
+            st.session_state.selected_use_case = "l1_performance"
             st.session_state.current_page = "💬 Chat"
             st.rerun()
     

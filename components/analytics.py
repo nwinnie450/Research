@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
-from services.blockchain_service import BlockchainService
+# from services.blockchain_service import BlockchainService  # Removed - service deleted
 from typing import Dict, List
 import time
 from datetime import datetime, timedelta
@@ -18,10 +18,24 @@ def render_analytics():
     st.markdown("---")
     st.markdown("### 📈 Advanced Analytics")
     
-    blockchain_service = BlockchainService()
+    st.info("🚧 **Advanced Analytics is being updated with real-time data integration.**")
+    st.markdown("""
+    **Coming Soon:**
+    - Real-time TPS performance charts
+    - Live fee trend analysis  
+    - Network utilization metrics
+    - Protocol comparison matrices
     
-    # Protocol selector
-    protocols = blockchain_service._fetch_protocol_data()
+    **For now, use the Chat interface to get:**
+    - TPS rankings: *"TPS ranking of L1 blockchains"*
+    - Protocol analysis: *"Tell me about Solana performance"*
+    - Market data: *"Comprehensive market analysis"*
+    """)
+    
+    return  # Skip the rest of the function
+    
+    # Protocol selector - disabled for now
+    protocols = []
     protocol_names = [p['name'] for p in protocols]
     
     selected_protocol_name = st.selectbox(

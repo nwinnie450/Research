@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
-from services.blockchain_service import BlockchainService
+# from services.blockchain_service import BlockchainService  # Removed - service deleted
 from typing import Dict, List
 
 def render_comparison():
@@ -15,12 +15,25 @@ def render_comparison():
     st.markdown("---")
     st.markdown("### 📊 Protocol Comparison")
     
-    blockchain_service = BlockchainService()
-    protocols = blockchain_service._fetch_protocol_data()
+    st.info("🚧 **Protocol Comparison is being updated with real-time L1 data.**")
+    st.markdown("""
+    **Enhanced Comparison Available via Chat:**
     
-    if not protocols:
-        st.error("Unable to load blockchain data for comparison")
-        return
+    Try these queries for immediate comparisons:
+    - *"TPS ranking of L1 blockchains"* - See live performance rankings
+    - *"Comprehensive market analysis"* - Multi-metric comparison table  
+    - *"Best blockchain for gaming"* - Use-case optimized comparison
+    - *"Lowest fee L1 protocols"* - Cost-focused comparison
+    
+    **Coming Soon:**
+    - Interactive comparison charts
+    - Side-by-side protocol analysis
+    - Custom metric selections
+    """)
+    
+    return  # Skip the rest of the function
+    
+    protocols = []  # Disabled for now
     
     # Protocol selection interface
     selected_protocols = render_protocol_selector(protocols)

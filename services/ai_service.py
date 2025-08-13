@@ -6,7 +6,7 @@ import re
 from typing import Dict, List, Optional, Any
 from config import USE_CASES, USE_CUSTOM_AGENT
 from services.custom_ai_agent import CustomBlockchainAIAgent
-from services.realtime_l1_data import RealtimeL1DataService
+from services.live_l1_data_service import LiveL1DataService
 import streamlit as st
 
 class AIService:
@@ -27,7 +27,7 @@ class AIService:
             self.custom_agent = None
         
         # Initialize real-time data service
-        self.realtime_data = RealtimeL1DataService()
+        self.realtime_data = LiveL1DataService()
     
     def get_chat_response(self, user_input: str, conversation_history: List[Dict]) -> str:
         """Get AI response for user query using Custom Agent or L1-focused responses"""
@@ -278,10 +278,10 @@ What specific L1 protocol question can I help you with today?"""
             protocols = ['ethereum', 'binance', 'tron']  # Focus on protocols with real-time APIs
             realtime_data = {}
             
-            for protocol in protocols:
-                data = self.realtime_data.get_live_l1_data(protocol)
-                if data:
-                    realtime_data[protocol] = data
+            # Get comprehensive L1 market analysis
+            market_analysis = self.realtime_data.get_live_l1_market_analysis()
+            if market_analysis and market_analysis.get('protocols'):
+                realtime_data = market_analysis['protocols']
             
             # Add static data for protocols without real-time APIs
             realtime_data['bitcoin'] = {
