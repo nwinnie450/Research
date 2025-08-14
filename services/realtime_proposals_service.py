@@ -111,7 +111,7 @@ class RealtimeProposalsService:
             return self.cache[cache_key]['data']
         
         try:
-            proposals = self._fetch_proposals_from_github(protocol, limit, sort_by)
+            proposals = self._fetch_proposals_from_github(protocol, limit, sort_by, status_filter)
             st.info(f"🔍 Debug: Fetched {len(proposals)} proposals before status filtering")
             
             # Debug: Show first few proposal statuses
@@ -133,7 +133,7 @@ class RealtimeProposalsService:
             st.warning(f"⚠️ GitHub API error for {protocol}: {str(e)}. Using fallback data.")
             return self._get_fallback_proposals(protocol, limit)
     
-    def _fetch_proposals_from_github(self, protocol: str, limit: int, sort_by: str = 'number') -> List[Dict]:
+    def _fetch_proposals_from_github(self, protocol: str, limit: int, sort_by: str = 'number', status_filter: str = None) -> List[Dict]:
         """Fetch proposals from GitHub API"""
         if protocol not in self.repositories:
             st.error(f"🔍 Debug: Protocol {protocol} not found in repositories")
@@ -458,7 +458,7 @@ class RealtimeProposalsService:
         search_limit = 200 if query_lower in ['tips', 'eips', 'bips', 'beps', 'all'] else 100
         
         for protocol in protocols:
-            proposals = self.get_latest_proposals(protocol, limit=search_limit, sort_by='number')
+            proposals = self.get_latest_proposals(protocol, limit=search_limit, sort_by='number', status_filter=None)
             
             for proposal in proposals:
                 # Special handling for protocol-specific searches
