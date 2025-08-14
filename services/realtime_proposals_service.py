@@ -27,26 +27,20 @@ class RealtimeProposalsService:
             # Method 1: Direct secrets access
             if hasattr(st, 'secrets') and hasattr(st.secrets, 'GITHUB_TOKEN'):
                 self.github_token = st.secrets.GITHUB_TOKEN
-                st.info(f"🔍 Debug: Token from st.secrets.GITHUB_TOKEN: {self.github_token[:20]}...")
             # Method 2: Dictionary-style access
             elif hasattr(st, 'secrets') and 'GITHUB_TOKEN' in st.secrets:
                 self.github_token = st.secrets['GITHUB_TOKEN']
-                st.info(f"🔍 Debug: Token from st.secrets['GITHUB_TOKEN']: {self.github_token[:20]}...")
             # Method 3: Environment variable
             elif os.getenv('GITHUB_TOKEN'):
                 self.github_token = os.getenv('GITHUB_TOKEN')
-                st.info(f"🔍 Debug: Token from environment: {self.github_token[:20]}...")
             else:
-                st.error("🔍 Debug: No token found in any location!")
-                st.error(f"🔍 Secrets available: {list(st.secrets.keys()) if hasattr(st, 'secrets') else 'No secrets'}")
+                self.github_token = None
         except Exception as e:
-            st.error(f"🔍 Debug: Error loading token: {str(e)}")
             self.github_token = None
         
         # Clean the token (remove quotes and whitespace)
         if self.github_token:
             self.github_token = str(self.github_token).strip().strip('"').strip("'")
-            st.success(f"🔍 Debug: Cleaned token: {self.github_token[:20]}...")
         
         if self.github_token:
             self.session.headers.update({
@@ -103,32 +97,19 @@ class RealtimeProposalsService:
         self.cache_duration = 300  # 5 minutes
     
     def get_latest_proposals(self, protocol: str, limit: int = 10, status_filter: str = None, sort_by: str = 'number') -> List[Dict]:
-        """Get latest proposals for a protocol"""
-        st.info(f"🔍 Debug: get_latest_proposals called - protocol={protocol}, limit={limit}, status_filter={status_filter}, sort_by={sort_by}")
-        
+        """Get latest proposals for a protocol"""        
         cache_key = f"{protocol}_{limit}_{status_filter}"
         
         # Check cache (temporarily disable for debugging)
         if False and self._is_cached(cache_key):
-            st.info(f"🔍 Debug: Using cached data for {cache_key}")
             return self.cache[cache_key]['data']
-        else:
-            st.info(f"🔍 Debug: No cache hit, fetching fresh data for {cache_key}")
         
         try:
             proposals = self._fetch_proposals_from_github(protocol, limit, sort_by, status_filter)
-            st.info(f"🔍 Debug: Fetched {len(proposals)} proposals before status filtering")
-            
-            # Debug: Show first few proposal statuses
-            if proposals:
-                for i, p in enumerate(proposals[:3]):
-                    st.info(f"🔍 Debug: Proposal {i+1} - Status: '{p.get('status', 'Unknown')}'")
             
             # Apply status filter
             if status_filter and status_filter != 'all':
-                st.info(f"🔍 Debug: Applying status filter: '{status_filter}'")
                 proposals = self._filter_by_status(proposals, status_filter)
-                st.info(f"🔍 Debug: {len(proposals)} proposals after status filtering")
             
             # Cache results
             self._cache_data(cache_key, proposals)
@@ -141,7 +122,6 @@ class RealtimeProposalsService:
     def _fetch_proposals_from_github(self, protocol: str, limit: int, sort_by: str = 'number', status_filter: str = None) -> List[Dict]:
         """Fetch proposals from GitHub API"""
         if protocol not in self.repositories:
-            st.error(f"🔍 Debug: Protocol {protocol} not found in repositories")
             return []
         
         repo_config = self.repositories[protocol]
@@ -172,7 +152,7 @@ class RealtimeProposalsService:
         
         # For date sorting or status filtering, we need to fetch more files initially to find matches
         if status_filter in ['draft', 'review', 'withdrawn']:
-            initial_limit = limit * 10  # Search through more proposals for less common statuses
+            initial_limit = 500  # Search through many more proposals for less common statuses
         elif sort_by == 'date':
             initial_limit = limit * 3   # Need more for date sorting
         else:
@@ -408,18 +388,12 @@ class RealtimeProposalsService:
         else:
             return proposals
         
-        # Debug: Show all unique statuses found
-        all_statuses = set(p.get('status', '').lower() for p in proposals)
-        st.info(f"🔍 Debug: All statuses found: {sorted(all_statuses)}")
-        st.info(f"🔍 Debug: Looking for statuses: {valid_statuses}")
-        
         # Find matching proposals
         matching = []
         for p in proposals:
             p_status = p.get('status', '').lower()
             if p_status in valid_statuses:
                 matching.append(p)
-                st.info(f"🔍 Debug: MATCH - TIP-{p.get('number', 'N/A')} has status '{p.get('status', 'Unknown')}'")
         
         return matching
     
