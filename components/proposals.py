@@ -170,11 +170,31 @@ def render_proposals_interface():
                                 
                                 all_proposals.extend(proposals)
                         
-                        # Store results
+                        # Store results in the format expected by display functions
+                        # Group proposals by type for display
+                        standards_data = []
+                        type_groups = {}
+                        
+                        # Group proposals by type
+                        for proposal in all_proposals:
+                            ptype = proposal.get('type', 'Unknown')
+                            if ptype not in type_groups:
+                                type_groups[ptype] = []
+                            type_groups[ptype].append(proposal)
+                        
+                        # Convert to expected format
+                        for ptype, proposals in type_groups.items():
+                            standards_data.append({
+                                'standard': ptype,
+                                'source': f"GitHub API - {protocol_map.get(ptype, 'Unknown')} repository",
+                                'items': proposals
+                            })
+                        
                         st.session_state.proposals_result = {
                             'success': True,
-                            'data': all_proposals,
-                            'total_count': len(all_proposals)
+                            'standards': standards_data,
+                            'total_count': len(all_proposals),
+                            'fetched_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         }
                     else:
                         # Use original fetcher
