@@ -13,16 +13,21 @@ ANKR_API_KEY = os.getenv("ANKR_API_KEY", "")
 ANKR_API_URL = "https://rpc.ankr.com/multichain"
 
 # Application Settings
-APP_TITLE = "Blockchain Research & Advisory AI Agent"
-APP_DESCRIPTION = "Find the perfect blockchain protocol for your project"
-VERSION = "1.0.0"
+APP_TITLE = "Top 5 L1 Protocol Research Hub"
+APP_DESCRIPTION = "AI-powered analysis of Ethereum, Base, Tron, BSC & Bitcoin"
+VERSION = "2.0.0"
 
-# Streamlit Configuration
+# Streamlit Configuration - Optimized for compact display
 PAGE_CONFIG = {
     "page_title": APP_TITLE,
     "page_icon": "🔗",
     "layout": "wide",
-    "initial_sidebar_state": "expanded"
+    "initial_sidebar_state": "expanded",
+    "menu_items": {
+        'Get Help': None,
+        'Report a bug': None,
+        'About': f"# {APP_TITLE}\n{APP_DESCRIPTION}"
+    }
 }
 
 # Color Palette (from design spec)
@@ -40,112 +45,47 @@ COLORS = {
     "white": "#FFFFFF"
 }
 
-# Supported Blockchain Protocols
+# Focused Top 5 L1 Blockchain Protocols
 BLOCKCHAIN_PROTOCOLS = {
     "ethereum": {
         "name": "Ethereum",
         "symbol": "ETH",
         "type": "Layer 1",
         "consensus": "Proof of Stake",
-        "website": "https://ethereum.org"
+        "website": "https://ethereum.org",
+        "description": "Leading smart contract platform"
     },
-    "solana": {
-        "name": "Solana", 
-        "symbol": "SOL",
+    "bitcoin": {
+        "name": "Bitcoin",
+        "symbol": "BTC",
         "type": "Layer 1",
-        "consensus": "Proof of History + PoS",
-        "website": "https://solana.com"
+        "consensus": "Proof of Work",
+        "website": "https://bitcoin.org",
+        "description": "Original digital currency"
     },
-    "polygon": {
-        "name": "Polygon",
-        "symbol": "MATIC", 
-        "type": "Layer 2",
-        "consensus": "Proof of Stake",
-        "website": "https://polygon.technology"
-    },
-    "binance": {
+    "binance_smart_chain": {
         "name": "BNB Smart Chain",
         "symbol": "BNB",
         "type": "Layer 1", 
         "consensus": "Proof of Stake Authority",
-        "website": "https://www.bnbchain.org"
+        "website": "https://www.bnbchain.org",
+        "description": "High-performance Binance ecosystem"
     },
-    "avalanche": {
-        "name": "Avalanche",
-        "symbol": "AVAX",
+    "tron": {
+        "name": "Tron",
+        "symbol": "TRX",
         "type": "Layer 1",
-        "consensus": "Avalanche Consensus",
-        "website": "https://www.avax.network"
+        "consensus": "Delegated Proof of Stake",
+        "website": "https://tron.network",
+        "description": "High-speed, low-cost transactions"
     },
-    "cardano": {
-        "name": "Cardano",
-        "symbol": "ADA", 
-        "type": "Layer 1",
-        "consensus": "Ouroboros PoS",
-        "website": "https://cardano.org"
-    },
-    "polkadot": {
-        "name": "Polkadot",
-        "symbol": "DOT",
-        "type": "Layer 0",
-        "consensus": "Nominated PoS", 
-        "website": "https://polkadot.network"
-    },
-    "cosmos": {
-        "name": "Cosmos",
-        "symbol": "ATOM",
-        "type": "Layer 0",
-        "consensus": "Tendermint BFT",
-        "website": "https://cosmos.network"
-    },
-    "near": {
-        "name": "NEAR Protocol", 
-        "symbol": "NEAR",
-        "type": "Layer 1",
-        "consensus": "Doomslug PoS",
-        "website": "https://near.org"
-    },
-    "fantom": {
-        "name": "Fantom",
-        "symbol": "FTM",
-        "type": "Layer 1", 
-        "consensus": "Lachesis PoS",
-        "website": "https://fantom.foundation"
-    },
-    "algorand": {
-        "name": "Algorand",
-        "symbol": "ALGO",
-        "type": "Layer 1",
-        "consensus": "Pure PoS",
-        "website": "https://algorand.com"
-    },
-    "tezos": {
-        "name": "Tezos", 
-        "symbol": "XTZ",
-        "type": "Layer 1",
-        "consensus": "Liquid PoS",
-        "website": "https://tezos.com"
-    },
-    "arbitrum": {
-        "name": "Arbitrum",
-        "symbol": "ARB",
+    "base": {
+        "name": "Base",
+        "symbol": "ETH",
         "type": "Layer 2",
         "consensus": "Optimistic Rollup",
-        "website": "https://arbitrum.io"
-    },
-    "optimism": {
-        "name": "Optimism",
-        "symbol": "OP", 
-        "type": "Layer 2",
-        "consensus": "Optimistic Rollup",
-        "website": "https://optimism.io"
-    },
-    "chainlink": {
-        "name": "Chainlink",
-        "symbol": "LINK",
-        "type": "Oracle Network",
-        "consensus": "Decentralized Oracle",
-        "website": "https://chain.link"
+        "website": "https://base.org",
+        "description": "Coinbase's Ethereum L2 solution"
     }
 }
 

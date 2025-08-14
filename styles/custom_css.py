@@ -14,9 +14,124 @@ def load_custom_css():
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Global Styles */
+    /* Global Styles - Compact for Streamlit Cloud */
     .main {{
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+    }}
+    
+    /* Make everything more compact and center-aligned */
+    .block-container {{
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+    }}
+    
+    /* Center align main content area */
+    .main .block-container {{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }}
+    
+    /* Center align content sections */
+    .stMarkdown, .stDataFrame, .stPlotlyChart, .stMetric {{
+        width: 100%;
+        text-align: center;
+    }}
+    
+    /* Center align form elements */
+    .stForm {{
+        margin: 0 auto;
+        text-align: center;
+    }}
+    
+    /* Center align button groups */
+    .stButton {{
+        text-align: center;
+        margin: 0 auto;
+    }}
+    
+    /* Center align columns content */
+    .stColumn > div {{
+        text-align: center;
+    }}
+    
+    /* Reduce default Streamlit spacing */
+    .stApp {{
+        margin-top: -80px;
+    }}
+    
+    /* Compact headers and text - Center aligned */
+    h1, .stMarkdown h1 {{
+        font-size: 1.8rem !important;
+        margin-top: 1rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+    }}
+    
+    h2, .stMarkdown h2 {{
+        font-size: 1.5rem !important;
+        margin-top: 0.8rem !important;
+        margin-bottom: 0.4rem !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+    }}
+    
+    h3, .stMarkdown h3 {{
+        font-size: 1.3rem !important;
+        margin-top: 0.6rem !important;
+        margin-bottom: 0.3rem !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+    }}
+    
+    h4, .stMarkdown h4 {{
+        font-size: 1.1rem !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.2rem !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+    }}
+    
+    /* Compact paragraphs */
+    p, .stMarkdown p {{
+        font-size: 0.9rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 0.5rem !important;
+    }}
+    
+    /* Compact metrics */
+    .stMetric {{
+        background: white;
+        padding: 0.5rem !important;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 0.5rem !important;
+    }}
+    
+    .stMetric > div {{
+        gap: 0.2rem !important;
+    }}
+    
+    .stMetric [data-testid="metric-container"] {{
+        padding: 0.3rem !important;
+    }}
+    
+    .stMetric label {{
+        font-size: 0.8rem !important;
+        font-weight: 500 !important;
+    }}
+    
+    .stMetric [data-testid="metric-container"] > div {{
+        font-size: 1.2rem !important;
+        font-weight: 600 !important;
     }}
     
     /* Header Styles */
@@ -41,14 +156,26 @@ def load_custom_css():
         opacity: 0.9;
     }}
     
-    /* Hero Section */
+    /* Compact Hero Section */
     .hero-section {{
         text-align: center;
-        padding: 2rem 1rem;
+        padding: 1.2rem 1rem;
         background: {COLORS['light_blue']};
-        border-radius: 16px;
-        margin-bottom: 2rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
         border: 1px solid {COLORS['secondary_blue']}20;
+    }}
+    
+    .hero-section h1 {{
+        font-size: 1.6rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.2 !important;
+    }}
+    
+    .hero-section p {{
+        font-size: 0.9rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.3 !important;
     }}
     
     /* Card Styles */
@@ -207,21 +334,123 @@ def load_custom_css():
         border-bottom: 1px solid #f3f4f6;
     }}
     
-    /* Button Styles */
+    /* Compact Button Styles */
     .stButton > button {{
         background: {COLORS['secondary_blue']};
         color: white;
         border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        padding: 0.4rem 0.8rem !important;
         font-weight: 500;
+        font-size: 0.85rem !important;
+        height: auto !important;
+        min-height: 32px !important;
         transition: all 0.2s ease;
+        margin: 0.2rem 0 !important;
     }}
     
     .stButton > button:hover {{
         background: {COLORS['primary_blue']};
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }}
+    
+    /* Compact sidebar - Keep left-aligned */
+    .css-1d391kg, .css-1v3fvcr {{
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }}
+    
+    /* Sidebar content should remain left-aligned */
+    .sidebar .stMarkdown, .sidebar .stRadio, .sidebar .stButton {{
+        text-align: left !important;
+    }}
+    
+    /* Override center alignment for sidebar */
+    [data-testid="stSidebar"] * {{
+        text-align: left !important;
+    }}
+    
+    [data-testid="stSidebar"] .stMarkdown h1,
+    [data-testid="stSidebar"] .stMarkdown h2,
+    [data-testid="stSidebar"] .stMarkdown h3 {{
+        text-align: left !important;
+    }}
+    
+    /* Compact radio buttons */
+    .stRadio > div {{
+        gap: 0.3rem !important;
+    }}
+    
+    .stRadio label {{
+        font-size: 0.9rem !important;
+        padding: 0.3rem 0 !important;
+    }}
+    
+    /* Compact selectbox */
+    .stSelectbox > div > div {{
+        font-size: 0.9rem !important;
+    }}
+    
+    /* Compact text input */
+    .stTextInput > div > div > input {{
+        font-size: 0.9rem !important;
+        padding: 0.4rem 0.6rem !important;
+    }}
+    
+    /* Compact columns spacing */
+    .stColumn {{
+        padding: 0 0.5rem !important;
+    }}
+    
+    /* Compact dataframes - Center aligned */
+    .stDataFrame {{
+        font-size: 0.85rem !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+    }}
+    
+    .stDataFrame th {{
+        font-size: 0.8rem !important;
+        padding: 0.3rem 0.5rem !important;
+        text-align: center !important;
+    }}
+    
+    .stDataFrame td {{
+        padding: 0.3rem 0.5rem !important;
+        text-align: center !important;
+    }}
+    
+    /* Center align Plotly charts */
+    .stPlotlyChart {{
+        display: flex !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+    }}
+    
+    /* Center align metric groups */
+    .metric-container {{
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 0 auto;
+    }}
+    
+    /* Center align cards and containers */
+    .element-container {{
+        text-align: center;
+    }}
+    
+    /* Compact expandable sections */
+    .stExpander {{
+        border-radius: 6px;
+        margin-bottom: 0.5rem !important;
+    }}
+    
+    .streamlit-expanderHeader {{
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
     }}
     
     /* Success/Error/Warning Messages */
@@ -295,22 +524,89 @@ def load_custom_css():
         background: {COLORS['primary_blue']};
     }}
     
-    /* Responsive Design */
+    /* Enhanced Responsive Design - Maintain center alignment */
     @media (max-width: 768px) {{
+        .block-container {{
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            text-align: center !important;
+        }}
+        
         .main-header h1 {{
-            font-size: 1.75rem;
+            font-size: 1.4rem !important;
+            text-align: center !important;
         }}
         
         .hero-section {{
-            padding: 1.5rem 1rem;
+            padding: 1rem 0.8rem;
+            text-align: center !important;
+        }}
+        
+        .hero-section h1 {{
+            font-size: 1.3rem !important;
+            text-align: center !important;
+        }}
+        
+        .hero-section p {{
+            font-size: 0.85rem !important;
+            text-align: center !important;
         }}
         
         .recommendation-card {{
-            padding: 1rem;
+            padding: 0.8rem;
+            margin: 0.5rem auto;
+            text-align: center !important;
         }}
         
         .metric-value {{
-            font-size: 1.5rem;
+            font-size: 1.2rem !important;
+        }}
+        
+        .stColumn {{
+            padding: 0 0.25rem !important;
+            text-align: center !important;
+        }}
+        
+        .stColumn > div {{
+            text-align: center !important;
+        }}
+        
+        h1 {{
+            font-size: 1.4rem !important;
+            text-align: center !important;
+        }}
+        
+        h2 {{
+            font-size: 1.2rem !important;
+            text-align: center !important;
+        }}
+        
+        h3 {{
+            font-size: 1.1rem !important;
+            text-align: center !important;
+        }}
+        
+        .stButton > button {{
+            font-size: 0.8rem !important;
+            padding: 0.3rem 0.6rem !important;
+        }}
+        
+        .stButton {{
+            text-align: center !important;
+            margin: 0 auto !important;
+        }}
+        
+        /* Keep sidebar left-aligned on mobile */
+        [data-testid="stSidebar"] * {{
+            text-align: left !important;
+        }}
+    }}
+    
+    /* Ultra-wide screens - prevent too much stretching */
+    @media (min-width: 1400px) {{
+        .block-container {{
+            max-width: 1200px !important;
+            margin: 0 auto !important;
         }}
     }}
     </style>
