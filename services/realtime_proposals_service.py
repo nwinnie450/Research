@@ -361,17 +361,40 @@ class RealtimeProposalsService:
         results = []
         query_lower = query.lower()
         
+        # Special handling for broad searches like "TIPS" or "ALL"
+        search_limit = 200 if query_lower in ['tips', 'eips', 'bips', 'beps', 'all'] else 100
+        
         for protocol in protocols:
-            proposals = self.get_latest_proposals(protocol, limit=50)
+            proposals = self.get_latest_proposals(protocol, limit=search_limit)
             
             for proposal in proposals:
-                # Search in title and summary
-                title = proposal.get('title', '').lower()
-                summary = proposal.get('summary', '').lower()
-                
-                if query_lower in title or query_lower in summary:
+                # Special handling for protocol-specific searches
+                if query_lower in ['tips', 'eips', 'bips', 'beps']:
+                    proposal_type = proposal.get('type', '').lower()
+                    if query_lower == 'tips' and protocol == 'tron':
+                        proposal['protocol'] = protocol
+                        results.append(proposal)
+                    elif query_lower == 'eips' and protocol == 'ethereum':
+                        proposal['protocol'] = protocol
+                        results.append(proposal)
+                    elif query_lower == 'bips' and protocol == 'bitcoin':
+                        proposal['protocol'] = protocol
+                        results.append(proposal)
+                    elif query_lower == 'beps' and protocol == 'binance_smart_chain':
+                        proposal['protocol'] = protocol
+                        results.append(proposal)
+                elif query_lower == 'all':
+                    # Return all proposals
                     proposal['protocol'] = protocol
                     results.append(proposal)
+                else:
+                    # Regular text search in title and summary
+                    title = proposal.get('title', '').lower()
+                    summary = proposal.get('summary', '').lower()
+                    
+                    if query_lower in title or query_lower in summary:
+                        proposal['protocol'] = protocol
+                        results.append(proposal)
         
         # Sort by relevance (title matches first, then by proposal number)
         def get_sort_key(proposal):
