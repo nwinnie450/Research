@@ -29,7 +29,7 @@ def render_sidebar():
             st.session_state.current_page = "💬 Chat"
             selected = "💬 Chat"
         
-        if st.button("⚡ L1 Performance Compare", use_container_width=True):
+        if st.button("⚡ L1 Performance", use_container_width=True):
             st.session_state.selected_use_case = "l1_performance"
             st.session_state.current_page = "💬 Chat"
             selected = "💬 Chat"

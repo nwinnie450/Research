@@ -174,6 +174,9 @@ def render_protocol_cards(protocols: List[Dict]):
     
     st.markdown("### 🔗 Protocol Spotlight")
     
+    # Add CSS class for proper styling
+    st.markdown('<div class="protocol-spotlight">', unsafe_allow_html=True)
+    
     # Sort protocols by a composite score for featured display
     featured_protocols = sorted(
         protocols,
@@ -181,14 +184,47 @@ def render_protocol_cards(protocols: List[Dict]):
         reverse=True
     )[:6]  # Top 6 protocols
     
-    # Create grid layout - compact
-    cols = st.columns(3)
-    
-    for i, protocol in enumerate(featured_protocols):
-        col = cols[i % 3]
+    # First row - exactly 3 protocols
+    if len(featured_protocols) >= 3:
+        col1, col2, col3 = st.columns(3)
         
-        with col:
-            render_protocol_card(protocol)
+        with col1:
+            render_protocol_card(featured_protocols[0])
+        
+        with col2:
+            render_protocol_card(featured_protocols[1])
+        
+        with col3:
+            render_protocol_card(featured_protocols[2])
+    
+    # Second row - remaining protocols (if any)
+    if len(featured_protocols) > 3:
+        remaining_protocols = featured_protocols[3:]
+        
+        if len(remaining_protocols) == 1:
+            # Single protocol - center it
+            _, col_center, _ = st.columns([1, 1, 1])
+            with col_center:
+                render_protocol_card(remaining_protocols[0])
+        elif len(remaining_protocols) == 2:
+            # Two protocols - center them
+            _, col1, col2, _ = st.columns([0.5, 1, 1, 0.5])
+            with col1:
+                render_protocol_card(remaining_protocols[0])
+            with col2:
+                render_protocol_card(remaining_protocols[1])
+        elif len(remaining_protocols) == 3:
+            # Three protocols - full row
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                render_protocol_card(remaining_protocols[0])
+            with col2:
+                render_protocol_card(remaining_protocols[1])
+            with col3:
+                render_protocol_card(remaining_protocols[2])
+    
+    # Close CSS class div
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def render_protocol_card(protocol: Dict):
     """Render individual protocol card - compact"""

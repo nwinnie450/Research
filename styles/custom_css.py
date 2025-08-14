@@ -806,6 +806,25 @@ def load_custom_css():
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }}
     
+    /* Protocol spotlight layout fixes */
+    .protocol-spotlight {{
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }}
+    
+    /* Ensure protocol cards in same row have equal heights */
+    .stColumns .stColumn {{
+        display: flex;
+        flex-direction: column;
+    }}
+    
+    .stColumns .stColumn > div {{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }}
+    
     .protocol-card:hover, .metric-card:hover {{
         transform: translateY(-3px);
         box-shadow: 0 var(--grid-2x) var(--grid-3x) rgba(0,0,0,0.15);
