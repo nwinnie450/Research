@@ -168,14 +168,22 @@ class RealtimeProposalsService:
         
         # Fetch details for each proposal
         proposals = []
-        for file in proposal_files:
+        st.info(f"🔍 Debug: Starting to fetch details for {len(proposal_files)} proposals")
+        
+        for i, file in enumerate(proposal_files):
             try:
+                st.info(f"🔍 Debug: Fetching proposal {i+1}/{len(proposal_files)}: {file['name']}")
                 proposal_data = self._fetch_proposal_details(repo, file, repo_config)
                 if proposal_data:
                     proposals.append(proposal_data)
+                    st.success(f"🔍 Debug: Successfully processed {file['name']}")
+                else:
+                    st.warning(f"🔍 Debug: No data returned for {file['name']}")
             except Exception as e:
+                st.error(f"🔍 Debug: Error processing {file['name']}: {str(e)}")
                 continue  # Skip failed proposals
         
+        st.info(f"🔍 Debug: Final result: {len(proposals)} proposals successfully processed")
         return proposals
     
     def _fetch_proposal_details(self, repo: str, file: Dict, config: Dict) -> Optional[Dict]:
