@@ -256,6 +256,10 @@ def render_proposals_interface():
     # Display fetched results
     if hasattr(st.session_state, 'proposals_result') and st.session_state.proposals_result:
         render_proposals_results(st.session_state.proposals_result, st.session_state.proposals_filter)
+        
+        # Add analytics for fetched proposals
+        if REALTIME_AVAILABLE:
+            render_proposal_analytics(st.session_state.proposals_result)
     
     # Quick action buttons
     st.markdown("---")
@@ -853,3 +857,249 @@ def display_proposals_table(proposals: List[Dict], is_search: bool = False):
                     type_counts[ptype] = type_counts.get(ptype, 0) + 1
                 most_common_type = max(type_counts.items(), key=lambda x: x[1]) if type_counts else ('None', 0)
                 st.metric("Most Common Type", f"{most_common_type[0]} ({most_common_type[1]})")
+
+def render_proposal_analytics(result: Dict):
+    """Render comprehensive analytics for proposals"""
+    
+    with st.expander("📊 Proposal Analytics & Trends", expanded=False):
+        st.markdown("### 📈 Proposal Analytics Dashboard")
+        
+        # Extract all proposals from standards
+        all_proposals = []
+        standards = result.get('standards', [])
+        
+        for standard in standards:
+            items = standard.get('items', [])
+            for item in items:
+                item['standard_type'] = standard.get('standard', 'Unknown')
+                all_proposals.append(item)
+        
+        if not all_proposals:
+            st.info("No proposals available for analytics")
+            return
+        
+        # Overview metrics
+        render_analytics_overview(all_proposals)
+        
+        # Status distribution
+        render_status_analytics(all_proposals)
+        
+        # Author analytics
+        render_author_analytics(all_proposals)
+        
+        # Timeline analytics
+        render_timeline_analytics(all_proposals)
+        
+        # Network comparison
+        render_network_analytics(all_proposals)
+
+def render_analytics_overview(proposals: List[Dict]):
+    """Render overview analytics metrics"""
+    
+    st.markdown("#### 🔍 Overview Metrics")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Total Proposals", len(proposals))
+    
+    with col2:
+        # Active proposals (final, active, production, living)
+        active_count = sum(1 for p in proposals if p.get('status', '').lower() in ['final', 'active', 'production', 'living'])
+        st.metric("Active Proposals", active_count)
+    
+    with col3:
+        # Draft proposals
+        draft_count = sum(1 for p in proposals if p.get('status', '').lower() == 'draft')
+        st.metric("Draft Proposals", draft_count)
+    
+    with col4:
+        # Unique authors
+        authors = set(p.get('author', 'Unknown') for p in proposals if p.get('author') and p.get('author') != 'Unknown')
+        st.metric("Unique Authors", len(authors))
+
+def render_status_analytics(proposals: List[Dict]):
+    """Render status distribution analytics"""
+    
+    st.markdown("#### 📊 Status Distribution")
+    
+    # Count proposals by status
+    status_counts = {}
+    for proposal in proposals:
+        status = proposal.get('status', 'Unknown')
+        status_counts[status] = status_counts.get(status, 0) + 1
+    
+    if status_counts:
+        # Create a simple bar chart representation
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            # Display status counts
+            for status, count in sorted(status_counts.items(), key=lambda x: x[1], reverse=True):
+                percentage = (count / len(proposals)) * 100
+                st.write(f"**{status}:** {count} ({percentage:.1f}%)")
+        
+        with col2:
+            # Status health score
+            health_score = calculate_status_health(status_counts, len(proposals))
+            st.metric("Health Score", f"{health_score:.1f}/10")
+            
+            if health_score >= 8:
+                st.success("Excellent proposal ecosystem health")
+            elif health_score >= 6:
+                st.info("Good proposal ecosystem health")
+            elif health_score >= 4:
+                st.warning("Moderate proposal ecosystem health")
+            else:
+                st.error("Needs improvement in proposal ecosystem")
+
+def render_author_analytics(proposals: List[Dict]):
+    """Render author contribution analytics"""
+    
+    st.markdown("#### 👥 Author Contributions")
+    
+    # Count proposals by author
+    author_counts = {}
+    for proposal in proposals:
+        author = proposal.get('author', 'Unknown')
+        if author and author != 'Unknown':
+            author_counts[author] = author_counts.get(author, 0) + 1
+    
+    if author_counts:
+        # Top contributors
+        top_authors = sorted(author_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**Top Contributors:**")
+            for i, (author, count) in enumerate(top_authors, 1):
+                st.write(f"{i}. **{author}**: {count} proposals")
+        
+        with col2:
+            # Contribution diversity
+            single_contrib = sum(1 for count in author_counts.values() if count == 1)
+            multi_contrib = len(author_counts) - single_contrib
+            
+            st.write(f"**Single Contributors:** {single_contrib}")
+            st.write(f"**Multi Contributors:** {multi_contrib}")
+            
+            diversity_score = (single_contrib / len(author_counts)) * 100 if author_counts else 0
+            st.write(f"**Diversity Score:** {diversity_score:.1f}%")
+
+def render_timeline_analytics(proposals: List[Dict]):
+    """Render timeline and trend analytics"""
+    
+    st.markdown("#### ⏰ Timeline Trends")
+    
+    # Extract years from creation dates
+    years = {}
+    recent_proposals = 0
+    
+    for proposal in proposals:
+        created = proposal.get('created', '')
+        if created:
+            try:
+                # Try to extract year from various date formats
+                import re
+                year_match = re.search(r'(\d{4})', str(created))
+                if year_match:
+                    year = int(year_match.group(1))
+                    if 2020 <= year <= 2025:  # Reasonable range
+                        years[year] = years.get(year, 0) + 1
+                        if year >= 2024:  # Recent proposals
+                            recent_proposals += 1
+            except:
+                continue
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if years:
+            st.markdown("**Proposals by Year:**")
+            for year in sorted(years.keys(), reverse=True)[:5]:
+                st.write(f"**{year}:** {years[year]} proposals")
+        else:
+            st.info("No timeline data available")
+    
+    with col2:
+        st.metric("Recent Proposals (2024+)", recent_proposals)
+        
+        # Activity trend
+        if len(years) >= 2:
+            sorted_years = sorted(years.keys())
+            if len(sorted_years) >= 2:
+                recent_year = sorted_years[-1]
+                previous_year = sorted_years[-2]
+                
+                trend = years[recent_year] - years[previous_year]
+                trend_text = "📈 Increasing" if trend > 0 else "📉 Decreasing" if trend < 0 else "➡️ Stable"
+                st.write(f"**Activity Trend:** {trend_text}")
+
+def render_network_analytics(proposals: List[Dict]):
+    """Render network/blockchain comparison analytics"""
+    
+    st.markdown("#### 🌐 Network Analysis")
+    
+    # Count by network type
+    network_counts = {}
+    network_status = {}
+    
+    for proposal in proposals:
+        network = proposal.get('standard_type', 'Unknown')
+        status = proposal.get('status', 'Unknown').lower()
+        
+        network_counts[network] = network_counts.get(network, 0) + 1
+        
+        if network not in network_status:
+            network_status[network] = {'active': 0, 'draft': 0, 'total': 0}
+        
+        network_status[network]['total'] += 1
+        if status in ['final', 'active', 'production', 'living']:
+            network_status[network]['active'] += 1
+        elif status == 'draft':
+            network_status[network]['draft'] += 1
+    
+    # Display network comparison
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Network Activity:**")
+        for network in sorted(network_counts.keys()):
+            count = network_counts[network]
+            percentage = (count / len(proposals)) * 100
+            st.write(f"**{network}:** {count} ({percentage:.1f}%)")
+    
+    with col2:
+        st.markdown("**Network Health:**")
+        for network in sorted(network_status.keys()):
+            stats = network_status[network]
+            if stats['total'] > 0:
+                active_rate = (stats['active'] / stats['total']) * 100
+                health_icon = "🟢" if active_rate > 50 else "🟡" if active_rate > 25 else "🔴"
+                st.write(f"{health_icon} **{network}:** {active_rate:.1f}% active")
+
+def calculate_status_health(status_counts: Dict[str, int], total: int) -> float:
+    """Calculate ecosystem health score based on status distribution"""
+    
+    # Weight different statuses
+    status_weights = {
+        'final': 2.0,
+        'active': 2.0,
+        'production': 2.0,
+        'living': 2.0,
+        'review': 1.5,
+        'proposed': 1.5,
+        'last call': 1.8,
+        'draft': 1.0,
+        'stagnant': 0.2,
+        'withdrawn': 0.1,
+        'rejected': 0.1
+    }
+    
+    weighted_score = 0
+    for status, count in status_counts.items():
+        weight = status_weights.get(status.lower(), 0.5)
+        weighted_score += (count / total) * weight * 10
+    
+    return min(weighted_score, 10.0)  # Cap at 10
