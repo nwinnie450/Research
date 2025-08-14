@@ -86,7 +86,19 @@ def render_proposals_interface():
             )
         
         with col2:
-            st.markdown("#### Status Filter")
+            st.markdown("#### Sort & Filter")
+            
+            # Sorting option
+            sort_option = st.selectbox(
+                "Sort by:",
+                options=["Latest by Number", "Latest by Date"],
+                index=0,
+                help="Sort proposals by number (TIP-4906 first) or creation date (2024+ first)"
+            )
+            
+            sort_by = 'date' if sort_option == "Latest by Date" else 'number'
+            
+            # Status filter
             status_options = {
                 'All Statuses': None,
                 'Production/Final': 'production',
@@ -160,7 +172,8 @@ def render_proposals_interface():
                                 proposals = realtime_proposals.get_latest_proposals(
                                     protocol, 
                                     limit=limit_results,
-                                    status_filter=status_filter
+                                    status_filter=status_filter,
+                                    sort_by=sort_by
                                 )
                                 
                                 # Add type information

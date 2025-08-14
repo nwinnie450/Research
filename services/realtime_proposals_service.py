@@ -102,7 +102,7 @@ class RealtimeProposalsService:
         self.cache = {}
         self.cache_duration = 300  # 5 minutes
     
-    def get_latest_proposals(self, protocol: str, limit: int = 10, status_filter: str = None) -> List[Dict]:
+    def get_latest_proposals(self, protocol: str, limit: int = 10, status_filter: str = None, sort_by: str = 'number') -> List[Dict]:
         """Get latest proposals for a protocol"""
         cache_key = f"{protocol}_{limit}_{status_filter}"
         
@@ -156,7 +156,10 @@ class RealtimeProposalsService:
         
         # Sort by name (which includes number) and get latest first
         proposal_files.sort(key=lambda x: self._extract_proposal_number(x['name']), reverse=True)
-        proposal_files = proposal_files[:limit]
+        
+        # For date sorting, we need to fetch more files initially to get creation dates
+        initial_limit = limit * 3 if sort_by == 'date' else limit
+        proposal_files = proposal_files[:initial_limit]
         
         # Fetch details for each proposal
         proposals = []
@@ -168,6 +171,16 @@ class RealtimeProposalsService:
                     proposals.append(proposal_data)
             except Exception as e:
                 continue  # Skip failed proposals
+        
+        # Apply sorting based on sort_by parameter
+        if sort_by == 'date':
+            # Sort by creation date (newest first)
+            proposals.sort(key=lambda x: self._parse_date_for_sorting(x.get('created', '')), reverse=True)
+        # else: already sorted by number (default)
+        
+        # Apply limit after date sorting
+        proposals = proposals[:limit]
+        
         return proposals
     
     def _fetch_proposal_details(self, repo: str, file: Dict, config: Dict) -> Optional[Dict]:
@@ -338,6 +351,29 @@ class RealtimeProposalsService:
             return int(numbers[0]) if numbers else 0
         except:
             return 0
+    
+    def _parse_date_for_sorting(self, date_str: str) -> str:
+        """Parse date string for sorting (newest first)"""
+        if not date_str or date_str == 'Unknown':
+            return '1900-01-01'  # Very old date for unknown dates
+        
+        # Try to extract YYYY-MM-DD format dates
+        try:
+            import re
+            # Look for YYYY-MM-DD pattern
+            date_match = re.search(r'(\d{4})-(\d{1,2})-(\d{1,2})', str(date_str))
+            if date_match:
+                year, month, day = date_match.groups()
+                return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+            
+            # Look for just year
+            year_match = re.search(r'(\d{4})', str(date_str))
+            if year_match:
+                return f"{year_match.group(1)}-01-01"
+            
+            return '1900-01-01'
+        except:
+            return '1900-01-01'
     
     def _filter_by_status(self, proposals: List[Dict], status_filter: str) -> List[Dict]:
         """Filter proposals by status"""
