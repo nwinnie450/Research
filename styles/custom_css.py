@@ -14,52 +14,130 @@ def load_custom_css():
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Global Styles - Compact for Streamlit Cloud */
+    /* GRID SYSTEM - Full viewport layout */
+    :root {{
+        --grid-unit: 8px;
+        --grid-2x: 16px;
+        --grid-3x: 24px;
+        --grid-4x: 32px;
+        --grid-6x: 48px;
+        --grid-8x: 64px;
+        --section-gap: 48px;
+        --content-gap: 24px;
+        --line-height-base: 1.5;
+        --line-height-tight: 1.25;
+    }}
+    
+    /* Global Styles - Full viewport */
     .main {{
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        max-width: 1200px;
-        margin: 0 auto;
+        width: 100vw;
+        max-width: 100vw;
+        margin: 0;
+        padding: 0;
+        line-height: var(--line-height-base);
     }}
     
-    /* Make everything more compact and center-aligned */
+    /* Content container - Full available space */
     .block-container {{
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-        max-width: 1200px !important;
-        margin: 0 auto !important;
+        padding: var(--grid-2x) var(--grid-3x) !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box;
     }}
     
-    /* Center align main content area */
+    /* Main content - Use all available space */
     .main .block-container {{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        padding: var(--grid-2x) var(--grid-3x);
+        box-sizing: border-box;
+        margin: 0;
     }}
     
-    /* Center align content sections */
+    /* Override Streamlit's container restrictions */
+    .stApp > div:first-child {{
+        width: 100% !important;
+        max-width: 100% !important;
+    }}
+    
+    [data-testid="stAppViewContainer"] {{
+        width: 100% !important;
+        max-width: 100% !important;
+    }}
+    
+    /* Section spacing system */
+    .section {{
+        margin-bottom: var(--section-gap);
+    }}
+    
+    .section:last-child {{
+        margin-bottom: 0;
+    }}
+    
+    /* COMPONENT ALIGNMENT SYSTEM */
+    
+    /* Content sections - full-width with proper spacing */
     .stMarkdown, .stDataFrame, .stPlotlyChart, .stMetric {{
         width: 100%;
-        text-align: center;
+        margin-bottom: var(--content-gap);
+        box-sizing: border-box;
     }}
     
-    /* Center align form elements */
+    /* Form elements - better proportioned */
     .stForm {{
-        margin: 0 auto;
-        text-align: center;
+        max-width: 800px;
+        margin: var(--content-gap) auto;
+        padding: var(--grid-3x);
+        width: 100%;
+        box-sizing: border-box;
     }}
     
-    /* Center align button groups */
+    /* BUTTON SYSTEM - Perfect centering with consistent spacing */
+    .button-group {{
+        display: flex;
+        justify-content: center;
+        gap: var(--grid-3x);
+        margin: var(--grid-2x) 0 var(--content-gap) 0;
+        flex-wrap: wrap;
+    }}
+    
     .stButton {{
-        text-align: center;
-        margin: 0 auto;
+        margin: 0;
+        flex: 0 0 auto;
     }}
     
-    /* Center align columns content */
+    /* Equal width buttons in column layouts */
+    .stColumns .stButton {{
+        width: 100%;
+        margin: var(--grid-unit) 0;
+    }}
+    
+    /* COLUMN SYSTEM - Proper gaps and equal heights */
+    .stColumn {{
+        padding: 0 calc(var(--grid-2x) / 2) !important;
+        box-sizing: border-box;
+    }}
+    
     .stColumn > div {{
-        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }}
+    
+    /* Equal height cards */
+    .stColumns {{
+        gap: var(--grid-3x) !important;
+        margin-bottom: var(--content-gap);
+    }}
+    
+    .stColumns > div {{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }}
     
     /* Reduce default Streamlit spacing */
@@ -67,71 +145,109 @@ def load_custom_css():
         margin-top: -80px;
     }}
     
-    /* Compact headers and text - Center aligned */
+    /* TYPOGRAPHY SYSTEM - Larger, more prominent text */
+    
+    /* Main title - bigger and bolder */
     h1, .stMarkdown h1 {{
-        font-size: 1.8rem !important;
-        margin-top: 1rem !important;
-        margin-bottom: 0.5rem !important;
-        line-height: 1.2 !important;
-        text-align: center !important;
+        font-size: 2.75rem !important;
+        margin: 0 0 var(--grid-3x) 0 !important;
+        line-height: var(--line-height-tight) !important;
+        text-align: left !important;
+        font-weight: 700 !important;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: var(--grid-3x);
     }}
     
+    /* Section headings - larger and more prominent */
     h2, .stMarkdown h2 {{
-        font-size: 1.5rem !important;
-        margin-top: 0.8rem !important;
-        margin-bottom: 0.4rem !important;
-        line-height: 1.2 !important;
-        text-align: center !important;
+        font-size: 2.125rem !important;
+        margin: var(--section-gap) 0 var(--content-gap) 0 !important;
+        line-height: var(--line-height-tight) !important;
+        text-align: left !important;
+        font-weight: 600 !important;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: var(--grid-3x);
     }}
     
+    h2:first-child {{
+        margin-top: 0 !important;
+    }}
+    
+    /* Subsection headings - increased size */
     h3, .stMarkdown h3 {{
-        font-size: 1.3rem !important;
-        margin-top: 0.6rem !important;
-        margin-bottom: 0.3rem !important;
-        line-height: 1.2 !important;
-        text-align: center !important;
+        font-size: 1.625rem !important;
+        margin: var(--grid-4x) 0 var(--grid-2x) 0 !important;
+        line-height: var(--line-height-tight) !important;
+        text-align: left !important;
+        font-weight: 600 !important;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: var(--grid-3x);
     }}
     
+    /* Card titles - larger for better readability */
     h4, .stMarkdown h4 {{
-        font-size: 1.1rem !important;
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.2rem !important;
-        line-height: 1.2 !important;
-        text-align: center !important;
+        font-size: 1.25rem !important;
+        margin: var(--grid-2x) 0 var(--grid-unit) 0 !important;
+        line-height: var(--line-height-tight) !important;
+        text-align: left !important;
+        font-weight: 500 !important;
+        width: 100%;
     }}
     
-    /* Compact paragraphs */
+    /* Paragraph text - larger for better readability */
     p, .stMarkdown p {{
-        font-size: 0.9rem !important;
-        line-height: 1.4 !important;
-        margin-bottom: 0.5rem !important;
+        font-size: 1.125rem !important;
+        line-height: var(--line-height-base) !important;
+        margin: 0 0 var(--grid-2x) 0 !important;
+        width: 100%;
+        text-align: left;
     }}
     
-    /* Compact metrics */
+    /* Icon + text alignment in headings */
+    h1 .icon, h2 .icon, h3 .icon {{
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.9em;
+    }}
+    
+    /* Enhanced metrics - larger and more prominent */
     .stMetric {{
         background: white;
-        padding: 0.5rem !important;
-        border-radius: 6px;
+        padding: var(--grid-3x) !important;
+        border-radius: var(--grid-2x);
         border: 1px solid #e5e7eb;
-        margin-bottom: 0.5rem !important;
+        margin-bottom: var(--grid-2x) !important;
+        min-height: 140px;
     }}
     
     .stMetric > div {{
-        gap: 0.2rem !important;
+        gap: var(--grid-unit) !important;
     }}
     
     .stMetric [data-testid="metric-container"] {{
-        padding: 0.3rem !important;
+        padding: var(--grid-2x) !important;
     }}
     
     .stMetric label {{
-        font-size: 0.8rem !important;
+        font-size: 1rem !important;
         font-weight: 500 !important;
     }}
     
     .stMetric [data-testid="metric-container"] > div {{
-        font-size: 1.2rem !important;
+        font-size: 1.75rem !important;
         font-weight: 600 !important;
+    }}
+    
+    /* Metric values - even larger */
+    .stMetric [data-testid="metric-container"] > div:first-child {{
+        font-size: 2.25rem !important;
+        font-weight: 700 !important;
     }}
     
     /* Header Styles */
@@ -334,25 +450,41 @@ def load_custom_css():
         border-bottom: 1px solid #f3f4f6;
     }}
     
-    /* Compact Button Styles */
+    /* BUTTON SYSTEM - Larger, more prominent buttons */
     .stButton > button {{
         background: {COLORS['secondary_blue']};
         color: white;
         border: none;
-        border-radius: 6px;
-        padding: 0.4rem 0.8rem !important;
+        border-radius: var(--grid-2x);
+        padding: var(--grid-3x) var(--grid-4x) !important;
         font-weight: 500;
-        font-size: 0.85rem !important;
-        height: auto !important;
-        min-height: 32px !important;
+        font-size: 1.125rem !important;
+        height: var(--grid-8x) !important;
+        min-width: 160px;
         transition: all 0.2s ease;
-        margin: 0.2rem 0 !important;
+        margin: var(--grid-2x) 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        box-sizing: border-box;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }}
     
     .stButton > button:hover {{
         background: {COLORS['primary_blue']};
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 var(--grid-2x) var(--grid-3x) rgba(0,0,0,0.2);
+    }}
+    
+    /* Button groups - equal width in rows */
+    .stColumns .stButton {{
+        width: 100%;
+    }}
+    
+    .stColumns .stButton > button {{
+        width: 100%;
+        min-width: unset;
     }}
     
     /* Compact sidebar - Keep left-aligned */
@@ -403,43 +535,131 @@ def load_custom_css():
         padding: 0 0.5rem !important;
     }}
     
-    /* Compact dataframes - Center aligned */
+    /* DATA TABLE SYSTEM - Larger, more readable tables */
     .stDataFrame {{
-        font-size: 0.85rem !important;
-        margin: 0 auto !important;
+        font-size: 1.1rem !important;
+        margin: var(--grid-3x) auto !important;
         text-align: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto;
+        border-radius: var(--grid-2x);
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }}
     
     .stDataFrame th {{
-        font-size: 0.8rem !important;
-        padding: 0.3rem 0.5rem !important;
+        font-size: 1rem !important;
+        padding: var(--grid-3x) var(--grid-2x) !important;
         text-align: center !important;
+        font-weight: 600 !important;
+        background: {COLORS['light_gray']};
+        height: var(--grid-8x);
+        vertical-align: middle;
     }}
     
     .stDataFrame td {{
-        padding: 0.3rem 0.5rem !important;
+        padding: var(--grid-3x) var(--grid-2x) !important;
         text-align: center !important;
+        height: var(--grid-6x);
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 1.05rem !important;
     }}
     
-    /* Center align Plotly charts */
+    /* CHART SYSTEM - Consistent sizing and alignment */
     .stPlotlyChart {{
-        display: flex !important;
-        justify-content: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: var(--grid-3x) auto !important;
+        text-align: center !important;
+        border-radius: var(--grid-unit);
+        overflow: hidden;
+    }}
+    
+    .stPlotlyChart > div {{
+        width: 100% !important;
         margin: 0 auto !important;
+        border-radius: var(--grid-unit);
     }}
     
-    /* Center align metric groups */
-    .metric-container {{
+    /* CARD GRID SYSTEM - 3-4 column uniform layout */
+    .protocol-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--grid-3x);
+        margin-bottom: var(--content-gap);
+        width: 100%;
+    }}
+    
+    .metric-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--grid-3x);
+        margin-bottom: var(--content-gap);
+        width: 100%;
+    }}
+    
+    /* Larger, more prominent cards */
+    .protocol-card, .metric-card {{
+        min-height: 220px;
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin: 0 auto;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: var(--grid-4x);
+        border-radius: var(--grid-3x);
+        border: 1px solid #e5e7eb;
+        background: white;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }}
     
-    /* Center align cards and containers */
+    .protocol-card:hover, .metric-card:hover {{
+        transform: translateY(-4px);
+        box-shadow: 0 var(--grid-2x) var(--grid-4x) rgba(0,0,0,0.15);
+        border-color: {COLORS['secondary_blue']};
+    }}
+    
+    /* Card content sizing */
+    .protocol-card h3, .metric-card h3 {{
+        font-size: 1.375rem !important;
+        margin-bottom: var(--grid-2x) !important;
+    }}
+    
+    .protocol-card p, .metric-card p {{
+        font-size: 1.1rem !important;
+        line-height: 1.5 !important;
+    }}
+    
+    .protocol-card .metric-value, .metric-card .metric-value {{
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+    }}
+    
+    /* Element containers - no extra spacing */
     .element-container {{
-        text-align: center;
+        margin: 0;
+        width: 100%;
+    }}
+    
+    /* Streamlit metrics - uniform sizing */
+    .stMetric {{
+        min-height: 120px;
+        padding: var(--grid-3x) !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: var(--grid-2x);
+        transition: all 0.2s ease;
+    }}
+    
+    .stMetric:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 var(--grid-unit) var(--grid-3x) rgba(0,0,0,0.1);
     }}
     
     /* Compact expandable sections */
@@ -524,89 +744,132 @@ def load_custom_css():
         background: {COLORS['primary_blue']};
     }}
     
-    /* Enhanced Responsive Design - Maintain center alignment */
+    /* RESPONSIVE DESIGN - Maintains grid system across screen sizes */
+    
+    /* Mobile - Stack cards, reduce spacing */
     @media (max-width: 768px) {{
+        :root {{
+            --section-gap: 32px;
+            --content-gap: 16px;
+        }}
+        
         .block-container {{
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
+            padding: var(--grid-2x) !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }}
+        
+        .main .block-container {{
+            padding: var(--grid-2x);
+            width: 100%;
+            max-width: 100%;
+        }}
+        
+        /* Single column grids on mobile */
+        .protocol-grid, .metric-grid {{
+            grid-template-columns: 1fr;
+            gap: var(--grid-2x);
+        }}
+        
+        /* Smaller cards on mobile */
+        .protocol-card, .metric-card {{
+            min-height: 140px;
+            padding: var(--grid-2x);
+        }}
+        
+        /* Adjust typography for mobile */
+        h1, .stMarkdown h1 {{
+            font-size: 1.75rem !important;
+            text-align: center !important;
+            justify-content: center;
+        }}
+        
+        h2, .stMarkdown h2 {{
+            font-size: 1.375rem !important;
+            text-align: center !important;
+            justify-content: center;
+        }}
+        
+        h3, .stMarkdown h3 {{
+            font-size: 1.125rem !important;
+            text-align: center !important;
+            justify-content: center;
+        }}
+        
+        p, .stMarkdown p {{
             text-align: center !important;
         }}
         
-        .main-header h1 {{
-            font-size: 1.4rem !important;
-            text-align: center !important;
-        }}
-        
-        .hero-section {{
-            padding: 1rem 0.8rem;
-            text-align: center !important;
-        }}
-        
-        .hero-section h1 {{
-            font-size: 1.3rem !important;
-            text-align: center !important;
-        }}
-        
-        .hero-section p {{
-            font-size: 0.85rem !important;
-            text-align: center !important;
-        }}
-        
-        .recommendation-card {{
-            padding: 0.8rem;
-            margin: 0.5rem auto;
-            text-align: center !important;
-        }}
-        
-        .metric-value {{
-            font-size: 1.2rem !important;
-        }}
-        
-        .stColumn {{
-            padding: 0 0.25rem !important;
-            text-align: center !important;
-        }}
-        
-        .stColumn > div {{
-            text-align: center !important;
-        }}
-        
-        h1 {{
-            font-size: 1.4rem !important;
-            text-align: center !important;
-        }}
-        
-        h2 {{
-            font-size: 1.2rem !important;
-            text-align: center !important;
-        }}
-        
-        h3 {{
-            font-size: 1.1rem !important;
-            text-align: center !important;
+        /* Button adjustments */
+        .button-group {{
+            flex-direction: column;
+            align-items: center;
+            gap: var(--grid-2x);
         }}
         
         .stButton > button {{
-            font-size: 0.8rem !important;
-            padding: 0.3rem 0.6rem !important;
-        }}
-        
-        .stButton {{
-            text-align: center !important;
-            margin: 0 auto !important;
-        }}
-        
-        /* Keep sidebar left-aligned on mobile */
-        [data-testid="stSidebar"] * {{
-            text-align: left !important;
+            font-size: 0.85rem !important;
+            padding: var(--grid-2x) var(--grid-3x) !important;
+            min-width: 200px;
         }}
     }}
     
-    /* Ultra-wide screens - prevent too much stretching */
+    /* Tablet - 2 column grids */
+    @media (min-width: 769px) and (max-width: 1024px) {{
+        .block-container {{
+            width: 100% !important;
+            max-width: 100% !important;
+        }}
+        
+        .protocol-grid {{
+            grid-template-columns: repeat(2, 1fr);
+        }}
+        
+        .metric-grid {{
+            grid-template-columns: repeat(3, 1fr);
+        }}
+    }}
+    
+    /* Desktop - 3+ column grids */
+    @media (min-width: 1025px) {{
+        .block-container {{
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: var(--grid-3x) var(--grid-4x) !important;
+        }}
+        
+        .protocol-grid {{
+            grid-template-columns: repeat(4, 1fr);
+        }}
+        
+        .metric-grid {{
+            grid-template-columns: repeat(5, 1fr);
+        }}
+    }}
+    
+    /* Large screens - Maximum columns */
     @media (min-width: 1400px) {{
         .block-container {{
-            max-width: 1200px !important;
-            margin: 0 auto !important;
+            padding: var(--grid-4x) var(--grid-6x) !important;
+        }}
+        
+        .protocol-grid {{
+            grid-template-columns: repeat(5, 1fr);
+        }}
+        
+        .metric-grid {{
+            grid-template-columns: repeat(6, 1fr);
+        }}
+    }}
+    
+    /* Ultra-wide screens */
+    @media (min-width: 1800px) {{
+        .protocol-grid {{
+            grid-template-columns: repeat(6, 1fr);
+        }}
+        
+        .metric-grid {{
+            grid-template-columns: repeat(8, 1fr);
         }}
     }}
     </style>
