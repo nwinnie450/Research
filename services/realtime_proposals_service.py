@@ -152,7 +152,7 @@ class RealtimeProposalsService:
         
         # For date sorting or status filtering, we need to fetch more files initially to find matches
         if status_filter in ['draft', 'review', 'withdrawn']:
-            initial_limit = 500  # Search through many more proposals for less common statuses
+            initial_limit = 150  # Search through more proposals for less common statuses (optimized for performance)
         elif sort_by == 'date':
             initial_limit = limit * 3   # Need more for date sorting
         else:
