@@ -14,21 +14,21 @@ def load_custom_css():
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* GRID SYSTEM - Full viewport layout */
+    /* GRID SYSTEM - Compact layout */
     :root {{
-        --grid-unit: 8px;
-        --grid-2x: 16px;
-        --grid-3x: 24px;
-        --grid-4x: 32px;
-        --grid-6x: 48px;
-        --grid-8x: 64px;
-        --section-gap: 48px;
-        --content-gap: 24px;
-        --line-height-base: 1.5;
-        --line-height-tight: 1.25;
+        --grid-unit: 4px;
+        --grid-2x: 8px;
+        --grid-3x: 12px;
+        --grid-4x: 16px;
+        --grid-6x: 24px;
+        --grid-8x: 32px;
+        --section-gap: 24px;
+        --content-gap: 12px;
+        --line-height-base: 1.4;
+        --line-height-tight: 1.2;
     }}
     
-    /* Global Styles - Full viewport */
+    /* Global Styles - Compact layout */
     .main {{
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         width: 100vw;
@@ -38,7 +38,7 @@ def load_custom_css():
         line-height: var(--line-height-base);
     }}
     
-    /* Content container - Full available space */
+    /* Content container - Compact padding */
     .block-container {{
         padding: var(--grid-2x) var(--grid-3x) !important;
         max-width: 100% !important;
@@ -47,7 +47,7 @@ def load_custom_css():
         box-sizing: border-box;
     }}
     
-    /* Main content - Use all available space */
+    /* Main content - Compact spacing */
     .main .block-container {{
         display: block;
         width: 100%;
@@ -68,7 +68,7 @@ def load_custom_css():
         max-width: 100% !important;
     }}
     
-    /* Section spacing system */
+    /* Section spacing system - Reduced */
     .section {{
         margin-bottom: var(--section-gap);
     }}
@@ -77,16 +77,16 @@ def load_custom_css():
         margin-bottom: 0;
     }}
     
-    /* COMPONENT ALIGNMENT SYSTEM */
+    /* COMPONENT ALIGNMENT SYSTEM - Compact */
     
-    /* Content sections - full-width with proper spacing */
+    /* Content sections - compact spacing */
     .stMarkdown, .stDataFrame, .stPlotlyChart, .stMetric {{
         width: 100%;
         margin-bottom: var(--content-gap);
         box-sizing: border-box;
     }}
     
-    /* Form elements - better proportioned */
+    /* Form elements - compact */
     .stForm {{
         max-width: 800px;
         margin: var(--content-gap) auto;
@@ -95,7 +95,7 @@ def load_custom_css():
         box-sizing: border-box;
     }}
     
-    /* BUTTON SYSTEM - Perfect centering with consistent spacing */
+    /* BUTTON SYSTEM - Compact spacing */
     .button-group {{
         display: flex;
         justify-content: center;
@@ -115,7 +115,7 @@ def load_custom_css():
         margin: var(--grid-unit) 0;
     }}
     
-    /* COLUMN SYSTEM - Proper gaps and equal heights */
+    /* COLUMN SYSTEM - Compact gaps */
     .stColumn {{
         padding: 0 calc(var(--grid-2x) / 2) !important;
         box-sizing: border-box;
@@ -128,7 +128,7 @@ def load_custom_css():
         box-sizing: border-box;
     }}
     
-    /* Equal height cards */
+    /* Compact column spacing */
     .stColumns {{
         gap: var(--grid-3x) !important;
         margin-bottom: var(--content-gap);
@@ -145,11 +145,11 @@ def load_custom_css():
         margin-top: -80px;
     }}
     
-    /* TYPOGRAPHY SYSTEM - Larger, more prominent text */
+    /* TYPOGRAPHY SYSTEM - Compact and prominent */
     
-    /* Main title - bigger and bolder */
+    /* Main title - compact */
     h1, .stMarkdown h1 {{
-        font-size: 2.75rem !important;
+        font-size: 2.25rem !important;
         margin: 0 0 var(--grid-3x) 0 !important;
         line-height: var(--line-height-tight) !important;
         text-align: left !important;
@@ -160,10 +160,10 @@ def load_custom_css():
         gap: var(--grid-3x);
     }}
     
-    /* Section headings - larger and more prominent */
+    /* Section headings - compact */
     h2, .stMarkdown h2 {{
-        font-size: 2.125rem !important;
-        margin: var(--section-gap) 0 var(--content-gap) 0 !important;
+        font-size: 1.75rem !important;
+        margin: var(--grid-4x) 0 var(--grid-2x) 0 !important;
         line-height: var(--line-height-tight) !important;
         text-align: left !important;
         font-weight: 600 !important;
@@ -177,10 +177,10 @@ def load_custom_css():
         margin-top: 0 !important;
     }}
     
-    /* Subsection headings - increased size */
+    /* Subsection headings - compact */
     h3, .stMarkdown h3 {{
-        font-size: 1.625rem !important;
-        margin: var(--grid-4x) 0 var(--grid-2x) 0 !important;
+        font-size: 1.375rem !important;
+        margin: var(--grid-3x) 0 var(--grid-2x) 0 !important;
         line-height: var(--line-height-tight) !important;
         text-align: left !important;
         font-weight: 600 !important;
@@ -190,9 +190,9 @@ def load_custom_css():
         gap: var(--grid-3x);
     }}
     
-    /* Card titles - larger for better readability */
+    /* Card titles - compact */
     h4, .stMarkdown h4 {{
-        font-size: 1.25rem !important;
+        font-size: 1.125rem !important;
         margin: var(--grid-2x) 0 var(--grid-unit) 0 !important;
         line-height: var(--line-height-tight) !important;
         text-align: left !important;
@@ -200,9 +200,9 @@ def load_custom_css():
         width: 100%;
     }}
     
-    /* Paragraph text - larger for better readability */
+    /* Paragraph text - compact */
     p, .stMarkdown p {{
-        font-size: 1.125rem !important;
+        font-size: 1rem !important;
         line-height: var(--line-height-base) !important;
         margin: 0 0 var(--grid-2x) 0 !important;
         width: 100%;
@@ -216,14 +216,14 @@ def load_custom_css():
         font-size: 0.9em;
     }}
     
-    /* Enhanced metrics - larger and more prominent */
+    /* Enhanced metrics - compact */
     .stMetric {{
         background: white;
         padding: var(--grid-3x) !important;
         border-radius: var(--grid-2x);
         border: 1px solid #e5e7eb;
         margin-bottom: var(--grid-2x) !important;
-        min-height: 140px;
+        min-height: 100px;
     }}
     
     .stMetric > div {{
@@ -235,72 +235,72 @@ def load_custom_css():
     }}
     
     .stMetric label {{
-        font-size: 1rem !important;
+        font-size: 0.9rem !important;
         font-weight: 500 !important;
     }}
     
     .stMetric [data-testid="metric-container"] > div {{
-        font-size: 1.75rem !important;
+        font-size: 1.5rem !important;
         font-weight: 600 !important;
     }}
     
-    /* Metric values - even larger */
+    /* Metric values - compact */
     .stMetric [data-testid="metric-container"] > div:first-child {{
-        font-size: 2.25rem !important;
+        font-size: 1.875rem !important;
         font-weight: 700 !important;
     }}
     
-    /* Header Styles */
+    /* Header Styles - Compact */
     .main-header {{
         background: linear-gradient(90deg, {COLORS['primary_blue']} 0%, {COLORS['secondary_blue']} 100%);
         color: white;
-        padding: 1.5rem 2rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
         text-align: center;
     }}
     
     .main-header h1 {{
         margin: 0;
-        font-size: 2.25rem;
+        font-size: 1.875rem;
         font-weight: 700;
     }}
     
     .main-header p {{
-        margin: 0.5rem 0 0 0;
-        font-size: 1.1rem;
+        margin: 0.25rem 0 0 0;
+        font-size: 1rem;
         opacity: 0.9;
     }}
     
     /* Compact Hero Section */
     .hero-section {{
         text-align: center;
-        padding: 1.2rem 1rem;
+        padding: 1rem;
         background: {COLORS['light_blue']};
-        border-radius: 10px;
-        margin-bottom: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
         border: 1px solid {COLORS['secondary_blue']}20;
     }}
     
     .hero-section h1 {{
-        font-size: 1.6rem !important;
-        margin-bottom: 0.5rem !important;
+        font-size: 1.375rem !important;
+        margin-bottom: 0.25rem !important;
         line-height: 1.2 !important;
     }}
     
     .hero-section p {{
-        font-size: 0.9rem !important;
-        margin-bottom: 0.5rem !important;
+        font-size: 0.875rem !important;
+        margin-bottom: 0.25rem !important;
         line-height: 1.3 !important;
     }}
     
-    /* Card Styles */
+    /* Card Styles - Compact */
     .recommendation-card {{
         background: {COLORS['white']};
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.5rem 0;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         transition: all 0.2s ease;
     }}
@@ -314,9 +314,9 @@ def load_custom_css():
     .protocol-card {{
         background: {COLORS['white']};
         border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem 0;
+        border-radius: 6px;
+        padding: 0.75rem;
+        margin: 0.25rem 0;
         transition: all 0.2s ease;
     }}
     
@@ -325,14 +325,14 @@ def load_custom_css():
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }}
     
-    /* Ranking Badges */
+    /* Ranking Badges - Compact */
     .rank-badge {{
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
+        padding: 0.2rem 0.6rem;
+        border-radius: 16px;
         font-weight: 600;
-        font-size: 0.875rem;
-        margin-right: 0.5rem;
+        font-size: 0.8rem;
+        margin-right: 0.4rem;
     }}
     
     .rank-1 {{
@@ -355,19 +355,19 @@ def load_custom_css():
         color: {COLORS['medium_gray']};
     }}
     
-    /* Chat Interface Styles */
+    /* Chat Interface Styles - Compact */
     .chat-container {{
         background: {COLORS['white']};
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.5rem 0;
     }}
     
     .chat-message {{
-        padding: 0.75rem 1rem;
-        margin: 0.5rem 0;
-        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        margin: 0.25rem 0;
+        border-radius: 6px;
         max-width: 85%;
     }}
     
@@ -384,12 +384,12 @@ def load_custom_css():
         margin-right: auto;
     }}
     
-    /* Metric Cards */
+    /* Metric Cards - Compact */
     .metric-card {{
         background: {COLORS['white']};
         border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 1rem;
+        border-radius: 6px;
+        padding: 0.75rem;
         text-align: center;
         transition: all 0.2s ease;
     }}
@@ -400,14 +400,14 @@ def load_custom_css():
     }}
     
     .metric-value {{
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: {COLORS['primary_blue']};
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.2rem;
     }}
     
     .metric-label {{
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         color: {COLORS['medium_gray']};
         text-transform: uppercase;
         font-weight: 500;
@@ -430,10 +430,10 @@ def load_custom_css():
         font-weight: 600;
     }}
     
-    /* Comparison Table Styles */
+    /* Comparison Table Styles - Compact */
     .comparison-table {{
         background: {COLORS['white']};
-        border-radius: 8px;
+        border-radius: 6px;
         overflow: hidden;
         border: 1px solid #e5e7eb;
     }}
@@ -441,26 +441,26 @@ def load_custom_css():
     .comparison-table th {{
         background: {COLORS['primary_blue']};
         color: white;
-        padding: 0.75rem 1rem;
+        padding: 0.5rem 0.75rem;
         font-weight: 600;
     }}
     
     .comparison-table td {{
-        padding: 0.75rem 1rem;
+        padding: 0.5rem 0.75rem;
         border-bottom: 1px solid #f3f4f6;
     }}
     
-    /* BUTTON SYSTEM - Larger, more prominent buttons */
+    /* BUTTON SYSTEM - Compact buttons */
     .stButton > button {{
         background: {COLORS['secondary_blue']};
         color: white;
         border: none;
         border-radius: var(--grid-2x);
-        padding: var(--grid-3x) var(--grid-4x) !important;
+        padding: var(--grid-2x) var(--grid-3x) !important;
         font-weight: 500;
-        font-size: 1.125rem !important;
-        height: var(--grid-8x) !important;
-        min-width: 160px;
+        font-size: 1rem !important;
+        height: var(--grid-6x) !important;
+        min-width: 140px;
         transition: all 0.2s ease;
         margin: var(--grid-2x) 0 !important;
         display: flex !important;
@@ -473,7 +473,7 @@ def load_custom_css():
     
     .stButton > button:hover {{
         background: {COLORS['primary_blue']};
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: 0 var(--grid-2x) var(--grid-3x) rgba(0,0,0,0.2);
     }}
     
@@ -487,10 +487,10 @@ def load_custom_css():
         min-width: unset;
     }}
     
-    /* Compact sidebar - Keep left-aligned */
+    /* Compact sidebar */
     .css-1d391kg, .css-1v3fvcr {{
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
     }}
     
     /* Sidebar content should remain left-aligned */
@@ -511,33 +511,33 @@ def load_custom_css():
     
     /* Compact radio buttons */
     .stRadio > div {{
-        gap: 0.3rem !important;
+        gap: 0.2rem !important;
     }}
     
     .stRadio label {{
-        font-size: 0.9rem !important;
-        padding: 0.3rem 0 !important;
+        font-size: 0.85rem !important;
+        padding: 0.2rem 0 !important;
     }}
     
     /* Compact selectbox */
     .stSelectbox > div > div {{
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
     }}
     
     /* Compact text input */
     .stTextInput > div > div > input {{
-        font-size: 0.9rem !important;
-        padding: 0.4rem 0.6rem !important;
+        font-size: 0.85rem !important;
+        padding: 0.3rem 0.5rem !important;
     }}
     
     /* Compact columns spacing */
     .stColumn {{
-        padding: 0 0.5rem !important;
+        padding: 0 0.4rem !important;
     }}
     
-    /* DATA TABLE SYSTEM - Larger, more readable tables */
+    /* DATA TABLE SYSTEM - Compact tables */
     .stDataFrame {{
-        font-size: 1.1rem !important;
+        font-size: 1rem !important;
         margin: var(--grid-3x) auto !important;
         text-align: center !important;
         width: 100% !important;
@@ -549,29 +549,29 @@ def load_custom_css():
     }}
     
     .stDataFrame th {{
-        font-size: 1rem !important;
-        padding: var(--grid-3x) var(--grid-2x) !important;
+        font-size: 0.9rem !important;
+        padding: var(--grid-2x) var(--grid-2x) !important;
         text-align: center !important;
         font-weight: 600 !important;
         background: {COLORS['light_gray']};
-        height: var(--grid-8x);
+        height: var(--grid-6x);
         vertical-align: middle;
     }}
     
     .stDataFrame td {{
-        padding: var(--grid-3x) var(--grid-2x) !important;
+        padding: var(--grid-2x) var(--grid-2x) !important;
         text-align: center !important;
-        height: var(--grid-6x);
+        height: var(--grid-4x);
         vertical-align: middle;
         border-bottom: 1px solid #f3f4f6;
-        font-size: 1.05rem !important;
+        font-size: 0.95rem !important;
     }}
     
-    /* CHART SYSTEM - Consistent sizing and alignment */
+    /* CHART SYSTEM - Compact sizing */
     .stPlotlyChart {{
         width: 100% !important;
         max-width: 100% !important;
-        margin: var(--grid-3x) auto !important;
+        margin: var(--grid-2x) auto !important;
         text-align: center !important;
         border-radius: var(--grid-unit);
         overflow: hidden;
@@ -583,10 +583,10 @@ def load_custom_css():
         border-radius: var(--grid-unit);
     }}
     
-    /* CARD GRID SYSTEM - 3-4 column uniform layout */
+    /* CARD GRID SYSTEM - Compact layout */
     .protocol-grid {{
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: var(--grid-3x);
         margin-bottom: var(--content-gap);
         width: 100%;
@@ -594,20 +594,20 @@ def load_custom_css():
     
     .metric-grid {{
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: var(--grid-3x);
         margin-bottom: var(--content-gap);
         width: 100%;
     }}
     
-    /* Larger, more prominent cards */
+    /* Compact cards */
     .protocol-card, .metric-card {{
-        min-height: 220px;
+        min-height: 180px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: var(--grid-4x);
-        border-radius: var(--grid-3x);
+        padding: var(--grid-3x);
+        border-radius: var(--grid-2x);
         border: 1px solid #e5e7eb;
         background: white;
         transition: all 0.2s ease;
@@ -615,24 +615,24 @@ def load_custom_css():
     }}
     
     .protocol-card:hover, .metric-card:hover {{
-        transform: translateY(-4px);
-        box-shadow: 0 var(--grid-2x) var(--grid-4x) rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 var(--grid-2x) var(--grid-3x) rgba(0,0,0,0.15);
         border-color: {COLORS['secondary_blue']};
     }}
     
-    /* Card content sizing */
+    /* Card content sizing - compact */
     .protocol-card h3, .metric-card h3 {{
-        font-size: 1.375rem !important;
+        font-size: 1.25rem !important;
         margin-bottom: var(--grid-2x) !important;
     }}
     
     .protocol-card p, .metric-card p {{
-        font-size: 1.1rem !important;
-        line-height: 1.5 !important;
+        font-size: 1rem !important;
+        line-height: 1.4 !important;
     }}
     
     .protocol-card .metric-value, .metric-card .metric-value {{
-        font-size: 2rem !important;
+        font-size: 1.75rem !important;
         font-weight: 700 !important;
     }}
     
@@ -642,10 +642,10 @@ def load_custom_css():
         width: 100%;
     }}
     
-    /* Streamlit metrics - uniform sizing */
+    /* Streamlit metrics - compact sizing */
     .stMetric {{
-        min-height: 120px;
-        padding: var(--grid-3x) !important;
+        min-height: 100px;
+        padding: var(--grid-2x) !important;
         margin: 0 !important;
         display: flex !important;
         flex-direction: column !important;
@@ -665,51 +665,51 @@ def load_custom_css():
     /* Compact expandable sections */
     .stExpander {{
         border-radius: 6px;
-        margin-bottom: 0.5rem !important;
+        margin-bottom: 0.25rem !important;
     }}
     
     .streamlit-expanderHeader {{
-        font-size: 0.95rem !important;
+        font-size: 0.9rem !important;
         font-weight: 500 !important;
     }}
     
-    /* Success/Error/Warning Messages */
+    /* Success/Error/Warning Messages - Compact */
     .success-message {{
         background: {COLORS['success_green']}15;
         border: 1px solid {COLORS['success_green']};
         color: {COLORS['success_green']};
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        margin: 0.5rem 0;
     }}
     
     .error-message {{
         background: {COLORS['danger_red']}15;
         border: 1px solid {COLORS['danger_red']};
         color: {COLORS['danger_red']};
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        margin: 0.5rem 0;
     }}
     
     .warning-message {{
         background: {COLORS['warning_orange']}15;
         border: 1px solid {COLORS['warning_orange']};
         color: {COLORS['warning_orange']};
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        margin: 0.5rem 0;
     }}
     
-    /* Loading Animation */
+    /* Loading Animation - Compact */
     .loading-spinner {{
         border: 3px solid {COLORS['light_gray']};
         border-top: 3px solid {COLORS['secondary_blue']};
         border-radius: 50%;
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
         animation: spin 1s linear infinite;
-        margin: 1rem auto;
+        margin: 0.5rem auto;
     }}
     
     @keyframes spin {{
@@ -726,9 +726,9 @@ def load_custom_css():
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
     
-    /* Custom Scrollbar */
+    /* Custom Scrollbar - Compact */
     ::-webkit-scrollbar {{
-        width: 6px;
+        width: 4px;
     }}
     
     ::-webkit-scrollbar-track {{
@@ -737,20 +737,20 @@ def load_custom_css():
     
     ::-webkit-scrollbar-thumb {{
         background: {COLORS['medium_gray']};
-        border-radius: 3px;
+        border-radius: 2px;
     }}
     
     ::-webkit-scrollbar-thumb:hover {{
         background: {COLORS['primary_blue']};
     }}
     
-    /* RESPONSIVE DESIGN - Maintains grid system across screen sizes */
+    /* RESPONSIVE DESIGN - Compact across screen sizes */
     
-    /* Mobile - Stack cards, reduce spacing */
+    /* Mobile - Stack cards, minimal spacing */
     @media (max-width: 768px) {{
         :root {{
-            --section-gap: 32px;
-            --content-gap: 16px;
+            --section-gap: 16px;
+            --content-gap: 8px;
         }}
         
         .block-container {{
@@ -773,25 +773,25 @@ def load_custom_css():
         
         /* Smaller cards on mobile */
         .protocol-card, .metric-card {{
-            min-height: 140px;
+            min-height: 120px;
             padding: var(--grid-2x);
         }}
         
         /* Adjust typography for mobile */
         h1, .stMarkdown h1 {{
-            font-size: 1.75rem !important;
+            font-size: 1.5rem !important;
             text-align: center !important;
             justify-content: center;
         }}
         
         h2, .stMarkdown h2 {{
-            font-size: 1.375rem !important;
+            font-size: 1.25rem !important;
             text-align: center !important;
             justify-content: center;
         }}
         
         h3, .stMarkdown h3 {{
-            font-size: 1.125rem !important;
+            font-size: 1rem !important;
             text-align: center !important;
             justify-content: center;
         }}
@@ -808,9 +808,9 @@ def load_custom_css():
         }}
         
         .stButton > button {{
-            font-size: 0.85rem !important;
+            font-size: 0.8rem !important;
             padding: var(--grid-2x) var(--grid-3x) !important;
-            min-width: 200px;
+            min-width: 180px;
         }}
     }}
     

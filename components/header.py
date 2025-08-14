@@ -5,7 +5,7 @@ import streamlit as st
 from config import APP_TITLE, APP_DESCRIPTION, VERSION
 
 def render_header():
-    """Render the main application header"""
+    """Render the main application header - compact"""
     
     st.markdown(f"""
     <div class="main-header">

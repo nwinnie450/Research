@@ -9,9 +9,8 @@ from services.latest_proposals_fetcher import LatestProposalsFetcher
 from services.blockchain_research_advisor import BlockchainResearchAdvisor
 
 def render_proposals_interface():
-    """Render the proposals management interface with TIPs status filtering"""
+    """Render the proposals management interface with TIPs status filtering - compact"""
     
-    st.markdown("---")
     st.markdown("### 📋 Blockchain Improvement Proposals")
     st.markdown("Explore and filter the latest TIPs, EIPs, BIPs, and other blockchain improvement proposals")
     

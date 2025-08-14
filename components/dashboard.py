@@ -16,9 +16,6 @@ def render_dashboard():
     # Initialize live data service
     live_data_service = LiveL1DataService()
     
-    st.markdown("---")
-    st.markdown("### 📊 Blockchain Protocol Overview")
-    
     # Get all protocol data from live service
     market_analysis = live_data_service.get_live_l1_market_analysis()
     protocols_dict = market_analysis.get('protocols', {})
@@ -46,10 +43,10 @@ def render_dashboard():
         }
         protocols.append(mapped_protocol)
     
-    # Key metrics row
+    # Key metrics row - compact
     render_key_metrics(protocols)
     
-    # Charts row
+    # Charts row - compact
     col1, col2 = st.columns(2)
     
     with col1:
@@ -58,14 +55,14 @@ def render_dashboard():
     with col2:
         render_fee_comparison(protocols)
     
-    # Protocol cards
+    # Protocol cards - compact
     render_protocol_cards(protocols)
     
-    # Market overview
+    # Market overview - compact
     render_market_overview(protocols)
 
 def render_key_metrics(protocols: List[Dict]):
-    """Render key metrics summary"""
+    """Render key metrics summary - compact layout"""
     
     # Calculate summary metrics
     total_protocols = len(protocols)
@@ -104,7 +101,7 @@ def render_key_metrics(protocols: List[Dict]):
         )
 
 def render_tps_comparison(protocols: List[Dict]):
-    """Render TPS comparison chart"""
+    """Render TPS comparison chart - compact"""
     
     st.markdown("#### ⚡ Transaction Throughput (TPS)")
     
@@ -115,7 +112,7 @@ def render_tps_comparison(protocols: List[Dict]):
     ])
     df = df.sort_values("TPS", ascending=True)
     
-    # Create horizontal bar chart
+    # Create horizontal bar chart - compact
     fig = px.bar(
         df, 
         x="TPS", 
@@ -127,16 +124,17 @@ def render_tps_comparison(protocols: List[Dict]):
     )
     
     fig.update_layout(
-        height=400,
+        height=300,  # Reduced height
         showlegend=False,
-        title_font_size=16,
-        font=dict(family="Inter, sans-serif")
+        title_font_size=14,  # Smaller title
+        font=dict(family="Inter, sans-serif"),
+        margin=dict(l=10, r=10, t=30, b=10)  # Compact margins
     )
     
     st.plotly_chart(fig, use_container_width=True)
 
 def render_fee_comparison(protocols: List[Dict]):
-    """Render transaction fee comparison chart"""
+    """Render transaction fee comparison chart - compact"""
     
     st.markdown("#### 💰 Average Transaction Fees")
     
@@ -147,7 +145,7 @@ def render_fee_comparison(protocols: List[Dict]):
     ])
     df = df.sort_values("Fee", ascending=False)
     
-    # Create bar chart
+    # Create bar chart - compact
     fig = px.bar(
         df,
         x="Protocol", 
@@ -158,11 +156,12 @@ def render_fee_comparison(protocols: List[Dict]):
     )
     
     fig.update_layout(
-        height=400,
+        height=300,  # Reduced height
         showlegend=False,
-        title_font_size=16,
+        title_font_size=14,  # Smaller title
         font=dict(family="Inter, sans-serif"),
-        xaxis_tickangle=-45
+        xaxis_tickangle=-45,
+        margin=dict(l=10, r=10, t=30, b=10)  # Compact margins
     )
     
     # Format y-axis to show dollar amounts
@@ -171,7 +170,7 @@ def render_fee_comparison(protocols: List[Dict]):
     st.plotly_chart(fig, use_container_width=True)
 
 def render_protocol_cards(protocols: List[Dict]):
-    """Render protocol overview cards"""
+    """Render protocol overview cards - compact"""
     
     st.markdown("### 🔗 Protocol Spotlight")
     
@@ -182,7 +181,7 @@ def render_protocol_cards(protocols: List[Dict]):
         reverse=True
     )[:6]  # Top 6 protocols
     
-    # Create grid layout
+    # Create grid layout - compact
     cols = st.columns(3)
     
     for i, protocol in enumerate(featured_protocols):
@@ -192,7 +191,7 @@ def render_protocol_cards(protocols: List[Dict]):
             render_protocol_card(protocol)
 
 def render_protocol_card(protocol: Dict):
-    """Render individual protocol card"""
+    """Render individual protocol card - compact"""
     
     # Determine status colors
     tps = protocol.get('tps', 0)
@@ -226,11 +225,11 @@ def render_protocol_card(protocol: Dict):
     
     # Use container and columns instead of HTML for better compatibility
     with st.container():
-        # Protocol header
+        # Protocol header - compact
         st.markdown(f"**{protocol['name']} ({protocol['symbol']})**")
         st.caption(protocol.get('description', 'Leading blockchain protocol'))
         
-        # Metrics in columns
+        # Metrics in columns - compact
         col1, col2 = st.columns(2)
         
         with col1:
@@ -250,11 +249,11 @@ def render_protocol_card(protocol: Dict):
             # Type
             st.metric("Type", protocol.get('type', 'Layer 1'), delta=None)
         
-        # Best use cases
+        # Best use cases - compact
         st.markdown(f"**Best for:** {', '.join(protocol.get('suitable_for', ['General use']))}")
         
-        # Add some spacing
-        st.markdown("---")
+        # Add minimal spacing
+        st.markdown("")
     
     if st.button(f"Analyze {protocol['name']}", key=f"analyze_{protocol['id']}", use_container_width=True):
         st.session_state.selected_protocol = protocol['id']
@@ -262,9 +261,8 @@ def render_protocol_card(protocol: Dict):
         st.rerun()
 
 def render_market_overview(protocols: List[Dict]):
-    """Render market overview section"""
+    """Render market overview section - compact"""
     
-    st.markdown("---")
     st.markdown("### 📈 Market Overview")
     
     col1, col2 = st.columns(2)
@@ -276,7 +274,7 @@ def render_market_overview(protocols: List[Dict]):
         render_ecosystem_comparison(protocols)
 
 def render_security_vs_performance(protocols: List[Dict]):
-    """Render security vs performance scatter plot"""
+    """Render security vs performance scatter plot - compact"""
     
     st.markdown("#### 🛡️ Security vs Performance")
     
@@ -291,7 +289,7 @@ def render_security_vs_performance(protocols: List[Dict]):
         for p in protocols
     ])
     
-    # Create scatter plot
+    # Create scatter plot - compact
     fig = px.scatter(
         df,
         x="TPS",
@@ -304,14 +302,16 @@ def render_security_vs_performance(protocols: List[Dict]):
     )
     
     fig.update_layout(
-        height=400,
-        font=dict(family="Inter, sans-serif")
+        height=300,  # Reduced height
+        font=dict(family="Inter, sans-serif"),
+        margin=dict(l=10, r=10, t=30, b=10),  # Compact margins
+        title_font_size=14  # Smaller title
     )
     
     st.plotly_chart(fig, use_container_width=True)
 
 def render_ecosystem_comparison(protocols: List[Dict]):
-    """Render ecosystem maturity radar chart"""
+    """Render ecosystem maturity radar chart - compact"""
     
     st.markdown("#### 🌟 Ecosystem Maturity")
     
@@ -322,7 +322,7 @@ def render_ecosystem_comparison(protocols: List[Dict]):
         reverse=True
     )[:5]
     
-    # Create radar chart
+    # Create radar chart - compact
     fig = go.Figure()
     
     categories = ['Ecosystem Score', 'Security Score', 'Performance', 'Adoption', 'Developer Activity']
@@ -356,8 +356,10 @@ def render_ecosystem_comparison(protocols: List[Dict]):
                 range=[0, 100]
             )),
         showlegend=True,
-        height=400,
-        font=dict(family="Inter, sans-serif")
+        height=300,  # Reduced height
+        font=dict(family="Inter, sans-serif"),
+        margin=dict(l=10, r=10, t=30, b=10),  # Compact margins
+        title_font_size=14  # Smaller title
     )
     
     st.plotly_chart(fig, use_container_width=True)

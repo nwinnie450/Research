@@ -10,9 +10,8 @@ from services.ai_service import AIService
 from utils.session_manager import update_search_filter
 
 def render_chat_interface():
-    """Render the main chat interface for AI conversation"""
+    """Render the main chat interface for AI conversation - compact"""
     
-    st.markdown("---")
     st.markdown("### 💬 Ask Your Blockchain AI Advisor")
     
     # Initialize services

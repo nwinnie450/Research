@@ -63,22 +63,21 @@ def main():
 
 def render_home_page():
     """Render the main home/dashboard page"""
-    st.markdown("---")
     
-    # Hero section
+    # Hero section - compact
     st.markdown("""
     <div class="hero-section">
-        <h1 style="text-align: center; color: #1E3A8A; margin-bottom: 0.5rem;">
+        <h1 style="text-align: center; color: #1E3A8A; margin-bottom: 0.25rem;">
             Top 5 L1 Blockchain Protocol Analysis
         </h1>
-        <p style="text-align: center; color: #6B7280; font-size: 1.2rem; margin-bottom: 2rem;">
+        <p style="text-align: center; color: #6B7280; font-size: 1rem; margin-bottom: 1rem;">
             <strong>Ethereum • Base • Tron • BSC • Bitcoin</strong><br>
             AI-powered research with live data & improvement proposals
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Quick action cards focused on Improvement Proposals and L1 protocols
+    # Quick action cards focused on Improvement Proposals and L1 protocols - compact
     st.markdown("### 🚀 Quick Start - Improvement Proposals & L1 Analysis")
     
     col1, col2, col3 = st.columns(3)

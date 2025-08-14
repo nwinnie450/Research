@@ -10,9 +10,8 @@ import pandas as pd
 from typing import Dict, List
 
 def render_comparison():
-    """Render the blockchain comparison interface"""
+    """Render the blockchain comparison interface - compact"""
     
-    st.markdown("---")
     st.markdown("### 📊 Protocol Comparison")
     
     st.info("🚧 **Protocol Comparison is being updated with real-time L1 data.**")

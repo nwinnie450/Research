@@ -13,9 +13,8 @@ import time
 from datetime import datetime, timedelta
 
 def render_analytics():
-    """Render advanced analytics dashboard"""
+    """Render advanced analytics dashboard - compact"""
     
-    st.markdown("---")
     st.markdown("### 📈 Advanced Analytics")
     
     st.info("🚧 **Advanced Analytics is being updated with real-time data integration.**")
