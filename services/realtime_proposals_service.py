@@ -137,20 +137,16 @@ class RealtimeProposalsService:
         
         # Get repository contents
         url = f"https://api.github.com/repos/{repo}/contents/{path}" if path else f"https://api.github.com/repos/{repo}/contents"
-        st.info(f"🔍 Debug: Fetching from URL: {url}")
         
         response = self.session.get(url)
         response.raise_for_status()
         
         files = response.json()
-        st.info(f"🔍 Debug: Found {len(files)} files in {protocol} repository")
         
         # Filter proposal files
         proposal_files = []
         prefix = repo_config['prefix']
         extension = repo_config['file_extension']
-        
-        st.info(f"🔍 Debug: Looking for files with prefix '{prefix}' and extension '{extension}'")
         
         for file in files:
             if (file['type'] == 'file' and 
@@ -158,32 +154,20 @@ class RealtimeProposalsService:
                 file['name'].endswith(extension)):
                 proposal_files.append(file)
         
-        st.info(f"🔍 Debug: Found {len(proposal_files)} matching proposal files")
-        
-        # Sort by name (which includes number) and get latest
+        # Sort by name (which includes number) and get latest first
         proposal_files.sort(key=lambda x: self._extract_proposal_number(x['name']), reverse=True)
         proposal_files = proposal_files[:limit]
         
-        st.info(f"🔍 Debug: Processing {len(proposal_files)} proposals (limited to {limit})")
-        
         # Fetch details for each proposal
         proposals = []
-        st.info(f"🔍 Debug: Starting to fetch details for {len(proposal_files)} proposals")
         
-        for i, file in enumerate(proposal_files):
+        for file in proposal_files:
             try:
-                st.info(f"🔍 Debug: Fetching proposal {i+1}/{len(proposal_files)}: {file['name']}")
                 proposal_data = self._fetch_proposal_details(repo, file, repo_config)
                 if proposal_data:
                     proposals.append(proposal_data)
-                    st.success(f"🔍 Debug: Successfully processed {file['name']}")
-                else:
-                    st.warning(f"🔍 Debug: No data returned for {file['name']}")
             except Exception as e:
-                st.error(f"🔍 Debug: Error processing {file['name']}: {str(e)}")
                 continue  # Skip failed proposals
-        
-        st.info(f"🔍 Debug: Final result: {len(proposals)} proposals successfully processed")
         return proposals
     
     def _fetch_proposal_details(self, repo: str, file: Dict, config: Dict) -> Optional[Dict]:
@@ -444,22 +428,39 @@ class RealtimeProposalsService:
                         proposal['protocol'] = protocol
                         results.append(proposal)
         
-        # Sort by relevance (title matches first, then by proposal number)
-        def get_sort_key(proposal):
-            title_match = query_lower not in proposal.get('title', '').lower()
-            # Safely convert number to int for sorting
-            try:
-                number = proposal.get('number', 0)
-                if isinstance(number, str):
-                    # Extract number from string like "eip-7998" -> 7998
-                    import re
-                    match = re.search(r'(\d+)', str(number))
-                    number = int(match.group(1)) if match else 0
-                return (title_match, -int(number))
-            except (ValueError, TypeError):
-                return (title_match, 0)
-        
-        results.sort(key=get_sort_key)
+        # For protocol-specific searches like "TIPS", sort by number only (latest first)
+        # For text searches, sort by relevance first, then by number
+        if query_lower in ['tips', 'eips', 'bips', 'beps', 'all']:
+            # Simple sort by proposal number (latest first)
+            def get_number_sort_key(proposal):
+                try:
+                    number = proposal.get('number', 0)
+                    if isinstance(number, str):
+                        import re
+                        match = re.search(r'(\d+)', str(number))
+                        number = int(match.group(1)) if match else 0
+                    return -int(number)  # Negative for descending order
+                except (ValueError, TypeError):
+                    return 0
+            
+            results.sort(key=get_number_sort_key)
+        else:
+            # Sort by relevance (title matches first, then by proposal number)
+            def get_sort_key(proposal):
+                title_match = query_lower not in proposal.get('title', '').lower()
+                # Safely convert number to int for sorting
+                try:
+                    number = proposal.get('number', 0)
+                    if isinstance(number, str):
+                        # Extract number from string like "eip-7998" -> 7998
+                        import re
+                        match = re.search(r'(\d+)', str(number))
+                        number = int(match.group(1)) if match else 0
+                    return (title_match, -int(number))
+                except (ValueError, TypeError):
+                    return (title_match, 0)
+            
+            results.sort(key=get_sort_key)
         
         return results[:20]  # Return top 20 matches
     
