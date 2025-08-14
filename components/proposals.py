@@ -43,10 +43,17 @@ def render_proposals_interface():
                 realtime_proposals.cache.clear()
                 st.rerun()
             
-            # Rate limit status
+            # Rate limit status and API key verification
             rate_info = realtime_proposals.check_rate_limit()
             remaining = rate_info.get('rate', {}).get('remaining', 0)
-            st.caption(f"API: {remaining} calls left")
+            limit = rate_info.get('rate', {}).get('limit', 0)
+            
+            # Show API status
+            if limit >= 5000:
+                st.success(f"🔑 API Key Active: {remaining}/{limit}")
+            else:
+                st.warning(f"⚠️ No API Key: {remaining}/{limit}")
+            
         else:
             st.info("Demo Mode")
     
