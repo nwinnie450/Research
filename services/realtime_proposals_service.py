@@ -240,7 +240,7 @@ class RealtimeProposalsService:
         try:
             # Parse different formats
             if config['file_extension'] == '.md':
-                # Markdown with YAML frontmatter
+                # Check for YAML frontmatter (EIPs)
                 if content.startswith('---'):
                     parts = content.split('---', 2)
                     if len(parts) >= 3:
@@ -259,23 +259,60 @@ class RealtimeProposalsService:
                                 elif key == 'status':
                                     proposal_data['status'] = value
                                 elif key in ['author', 'authors']:
-                                    # Handle author format like "name email@domain.com"
-                                    if '@' in value and ' ' in value:
-                                        proposal_data['author'] = value.split()[0]  # Get just the name
-                                    else:
-                                        proposal_data['author'] = value
+                                    proposal_data['author'] = value
                                 elif key in ['created', 'date']:
                                     proposal_data['created'] = value
-                                elif key == 'tip':
-                                    # TIP-specific number field
-                                    proposal_data['number'] = value
-                                elif key == 'category':
-                                    proposal_data['category'] = value
-                                elif key == 'type':
-                                    proposal_data['type'] = value
                         
                         # Get summary from body
                         body_lines = [line.strip() for line in body.split('\n') if line.strip()]
+                        if body_lines:
+                            proposal_data['summary'] = ' '.join(body_lines[:3])[:300] + '...'
+                
+                # Check for TIP format (starts with ``` code block)
+                elif content.startswith('```'):
+                    # TIP format with code block frontmatter
+                    lines = content.split('\n')
+                    in_frontmatter = False
+                    body_start = 0
+                    
+                    for i, line in enumerate(lines):
+                        line = line.strip()
+                        
+                        if line == '```' and not in_frontmatter:
+                            in_frontmatter = True
+                            continue
+                        elif line == '```' and in_frontmatter:
+                            in_frontmatter = False
+                            body_start = i + 1
+                            break
+                        elif in_frontmatter and ':' in line:
+                            key, value = line.split(':', 1)
+                            key = key.strip().lower()
+                            value = value.strip().strip('"\'')
+                            
+                            if key == 'title':
+                                proposal_data['title'] = value
+                            elif key == 'status':
+                                proposal_data['status'] = value
+                            elif key in ['author', 'authors']:
+                                # Handle author format like "name email@domain.com"
+                                if '@' in value and ' ' in value:
+                                    proposal_data['author'] = value.split()[0]  # Get just the name
+                                else:
+                                    proposal_data['author'] = value
+                            elif key in ['created', 'date']:
+                                proposal_data['created'] = value
+                            elif key == 'tip':
+                                # TIP-specific number field
+                                proposal_data['number'] = value
+                            elif key == 'category':
+                                proposal_data['category'] = value
+                            elif key == 'type':
+                                proposal_data['type'] = value
+                    
+                    # Get summary from body after frontmatter
+                    if body_start < len(lines):
+                        body_lines = [line.strip() for line in lines[body_start:] if line.strip() and not line.startswith('#')]
                         if body_lines:
                             proposal_data['summary'] = ' '.join(body_lines[:3])[:300] + '...'
             
