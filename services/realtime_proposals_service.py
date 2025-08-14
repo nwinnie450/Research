@@ -165,8 +165,13 @@ class RealtimeProposalsService:
         # Sort by name (which includes number) and get latest first
         proposal_files.sort(key=lambda x: self._extract_proposal_number(x['name']), reverse=True)
         
-        # For date sorting, we need to fetch more files initially to get creation dates
-        initial_limit = limit * 3 if sort_by == 'date' else limit
+        # For date sorting or status filtering, we need to fetch more files initially to find matches
+        if status_filter in ['draft', 'review', 'withdrawn']:
+            initial_limit = limit * 10  # Search through more proposals for less common statuses
+        elif sort_by == 'date':
+            initial_limit = limit * 3   # Need more for date sorting
+        else:
+            initial_limit = limit       # Default
         proposal_files = proposal_files[:initial_limit]
         
         # Fetch details for each proposal
