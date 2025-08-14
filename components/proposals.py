@@ -246,6 +246,11 @@ def render_proposals_interface():
     if REALTIME_AVAILABLE and hasattr(st.session_state, 'search_results'):
         st.markdown("#### 🎯 Search Results")
         display_proposals_table(st.session_state.search_results, is_search=True)
+        
+        # Add comparison feature for search results
+        if len(st.session_state.search_results) >= 2:
+            render_proposal_comparison(st.session_state.search_results)
+        
         st.markdown("---")
     
     # Display fetched results
@@ -489,6 +494,203 @@ def get_next_steps(status: str, standard: str) -> str:
     }
     
     return next_steps_map.get(status_lower, '')
+
+def render_proposal_comparison(proposals: List[Dict]):
+    """Render proposal comparison interface"""
+    
+    with st.expander("🔄 Compare Proposals", expanded=False):
+        st.markdown("#### Select Proposals to Compare")
+        
+        # Let users select proposals for comparison
+        proposal_options = {}
+        for proposal in proposals[:10]:  # Limit to first 10 for UI
+            key = f"{proposal.get('type', 'Unknown')}-{proposal.get('number', 'N/A')}"
+            title = proposal.get('title', 'No title')[:50] + ('...' if len(proposal.get('title', '')) > 50 else '')
+            proposal_options[f"{key}: {title}"] = proposal
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            proposal_1_key = st.selectbox(
+                "Select First Proposal:",
+                options=list(proposal_options.keys()),
+                key="compare_proposal_1"
+            )
+        
+        with col2:
+            proposal_2_key = st.selectbox(
+                "Select Second Proposal:",
+                options=list(proposal_options.keys()),
+                key="compare_proposal_2"
+            )
+        
+        if proposal_1_key and proposal_2_key and proposal_1_key != proposal_2_key:
+            proposal_1 = proposal_options[proposal_1_key]
+            proposal_2 = proposal_options[proposal_2_key]
+            
+            st.markdown("#### 📊 Proposal Comparison")
+            
+            # Side-by-side comparison
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                render_comparison_card(proposal_1, "First Proposal")
+            
+            with col2:
+                render_comparison_card(proposal_2, "Second Proposal")
+            
+            # Comparison insights
+            st.markdown("#### 🔍 Comparison Insights")
+            render_comparison_insights(proposal_1, proposal_2)
+        elif proposal_1_key == proposal_2_key:
+            st.warning("Please select two different proposals for comparison.")
+
+def render_comparison_card(proposal: Dict, title: str):
+    """Render a comparison card for a proposal"""
+    
+    st.markdown(f"##### {title}")
+    
+    with st.container():
+        # Header info
+        ptype = proposal.get('type', 'Unknown')
+        number = proposal.get('number', 'N/A')
+        status = proposal.get('status', 'Unknown')
+        status_color = get_status_color(status)
+        
+        st.markdown(f"**{ptype}-{number}**")
+        st.markdown(f"Status: :{status_color}[{status}]")
+        
+        # Title and summary
+        title = proposal.get('title', 'No title available')
+        st.markdown(f"**Title:** {title}")
+        
+        # Key details
+        st.markdown("**Key Details:**")
+        if proposal.get('author'):
+            st.markdown(f"• Author: {proposal.get('author')}")
+        if proposal.get('created'):
+            st.markdown(f"• Created: {proposal.get('created')}")
+        if proposal.get('category'):
+            st.markdown(f"• Category: {proposal.get('category')}")
+        
+        # Summary
+        if proposal.get('summary'):
+            st.markdown(f"**Summary:** {proposal.get('summary')[:200]}...")
+        
+        # Action buttons
+        if proposal.get('file_url') or proposal.get('link'):
+            link_url = proposal.get('file_url') or proposal.get('link')
+            st.markdown(f"[📖 View Full Proposal]({link_url})")
+
+def render_comparison_insights(proposal_1: Dict, proposal_2: Dict):
+    """Render insights comparing two proposals"""
+    
+    insights = []
+    
+    # Status comparison
+    status_1 = proposal_1.get('status', 'Unknown').lower()
+    status_2 = proposal_2.get('status', 'Unknown').lower()
+    
+    if status_1 != status_2:
+        status_comparison = compare_status_maturity(status_1, status_2)
+        insights.append(f"📊 **Status Maturity:** {status_comparison}")
+    
+    # Type comparison
+    type_1 = proposal_1.get('type', 'Unknown')
+    type_2 = proposal_2.get('type', 'Unknown')
+    
+    if type_1 != type_2:
+        insights.append(f"🔗 **Different Networks:** Comparing {type_1} (blockchain protocol) vs {type_2} (blockchain protocol)")
+    else:
+        insights.append(f"🔗 **Same Network:** Both proposals are for the {type_1} ecosystem")
+    
+    # Author comparison
+    author_1 = proposal_1.get('author', 'Unknown')
+    author_2 = proposal_2.get('author', 'Unknown')
+    
+    if author_1 == author_2 and author_1 != 'Unknown':
+        insights.append(f"👤 **Same Author:** Both proposals by {author_1}")
+    
+    # Category comparison
+    cat_1 = proposal_1.get('category', '').lower()
+    cat_2 = proposal_2.get('category', '').lower()
+    
+    if cat_1 and cat_2 and cat_1 != cat_2:
+        insights.append(f"📂 **Different Categories:** {cat_1.title()} vs {cat_2.title()}")
+    
+    # Timeline comparison
+    try:
+        created_1 = proposal_1.get('created', '')
+        created_2 = proposal_2.get('created', '')
+        
+        if created_1 and created_2:
+            if created_1 < created_2:
+                insights.append(f"⏰ **Timeline:** First proposal is older (created {created_1})")
+            elif created_1 > created_2:
+                insights.append(f"⏰ **Timeline:** Second proposal is older (created {created_2})")
+    except:
+        pass
+    
+    # Display insights
+    if insights:
+        for insight in insights:
+            st.markdown(insight)
+    else:
+        st.info("These proposals have similar characteristics.")
+    
+    # Recommendation
+    st.markdown("#### 💡 Recommendation")
+    recommendation = generate_comparison_recommendation(proposal_1, proposal_2)
+    st.info(recommendation)
+
+def compare_status_maturity(status_1: str, status_2: str) -> str:
+    """Compare the maturity of two proposal statuses"""
+    
+    maturity_order = {
+        'draft': 1,
+        'review': 2,
+        'proposed': 2,
+        'last call': 3,
+        'final': 4,
+        'active': 4,
+        'production': 4,
+        'living': 4,
+        'stagnant': 0,
+        'withdrawn': 0,
+        'rejected': 0
+    }
+    
+    score_1 = maturity_order.get(status_1, 1)
+    score_2 = maturity_order.get(status_2, 1)
+    
+    if score_1 > score_2:
+        return f"First proposal ({status_1.title()}) is more mature than second ({status_2.title()})"
+    elif score_2 > score_1:
+        return f"Second proposal ({status_2.title()}) is more mature than first ({status_1.title()})"
+    else:
+        return f"Both proposals are at similar maturity levels ({status_1.title()})"
+
+def generate_comparison_recommendation(proposal_1: Dict, proposal_2: Dict) -> str:
+    """Generate a recommendation based on proposal comparison"""
+    
+    status_1 = proposal_1.get('status', 'unknown').lower()
+    status_2 = proposal_2.get('status', 'unknown').lower()
+    
+    # Status-based recommendations
+    if status_1 in ['final', 'active', 'production'] and status_2 not in ['final', 'active', 'production']:
+        return "Consider the first proposal as it's already finalized and likely implemented."
+    elif status_2 in ['final', 'active', 'production'] and status_1 not in ['final', 'active', 'production']:
+        return "Consider the second proposal as it's already finalized and likely implemented."
+    elif status_1 in ['stagnant', 'withdrawn', 'rejected']:
+        return "The second proposal may be more relevant as the first is no longer active."
+    elif status_2 in ['stagnant', 'withdrawn', 'rejected']:
+        return "The first proposal may be more relevant as the second is no longer active."
+    elif status_1 == 'draft' and status_2 in ['review', 'proposed']:
+        return "The second proposal is further along in the review process."
+    elif status_2 == 'draft' and status_1 in ['review', 'proposed']:
+        return "The first proposal is further along in the review process."
+    else:
+        return "Both proposals appear to be at similar stages. Consider reviewing both for comprehensive understanding."
 
 def export_proposals_data(items: List[Dict], standard: str):
     """Export proposals data as downloadable file"""
