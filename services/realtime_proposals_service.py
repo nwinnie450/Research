@@ -403,8 +403,20 @@ class RealtimeProposalsService:
         else:
             return proposals
         
-        # Case-insensitive comparison
-        return [p for p in proposals if p.get('status', '').lower() in valid_statuses]
+        # Debug: Show all unique statuses found
+        all_statuses = set(p.get('status', '').lower() for p in proposals)
+        st.info(f"🔍 Debug: All statuses found: {sorted(all_statuses)}")
+        st.info(f"🔍 Debug: Looking for statuses: {valid_statuses}")
+        
+        # Find matching proposals
+        matching = []
+        for p in proposals:
+            p_status = p.get('status', '').lower()
+            if p_status in valid_statuses:
+                matching.append(p)
+                st.info(f"🔍 Debug: MATCH - TIP-{p.get('number', 'N/A')} has status '{p.get('status', 'Unknown')}'")
+        
+        return matching
     
     def _get_fallback_proposals(self, protocol: str, limit: int) -> List[Dict]:
         """Fallback mock proposals when API fails"""
