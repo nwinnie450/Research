@@ -37,29 +37,30 @@ def main():
     # Render header
     render_header()
     
-    # Main layout - optimized for full width
-    col1, col2 = st.columns([1, 4])
-    
-    with col1:
-        # Render sidebar navigation
-        selected_page = render_sidebar()
-    
-    with col2:
-        # Route to appropriate page based on selection
-        if selected_page == "🏠 Home":
-            render_home_page()
-        elif selected_page == "💬 Chat":
-            render_chat_interface()
-        elif selected_page == "📊 Compare":
-            render_comparison()
-        elif selected_page == "📈 Analytics": 
-            render_analytics()
-        elif selected_page == "📋 Proposals":
-            render_proposals_interface()
-        elif selected_page == "🔍 Advanced":
-            render_advanced_search()
-        else:
-            render_home_page()
+    # Main layout - eliminate all gaps between sidebar and content
+    with st.container():
+        col1, col2 = st.columns([1, 5], gap="small")
+        
+        with col1:
+            # Render sidebar navigation
+            selected_page = render_sidebar()
+        
+        with col2:
+            # Route to appropriate page based on selection
+            if selected_page == "🏠 Home":
+                render_home_page()
+            elif selected_page == "💬 Chat":
+                render_chat_interface()
+            elif selected_page == "📊 Compare":
+                render_comparison()
+            elif selected_page == "📈 Analytics": 
+                render_analytics()
+            elif selected_page == "📋 Proposals":
+                render_proposals_interface()
+            elif selected_page == "🔍 Advanced":
+                render_advanced_search()
+            else:
+                render_home_page()
 
 def render_home_page():
     """Render the main home/dashboard page"""

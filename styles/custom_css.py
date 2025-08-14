@@ -128,10 +128,12 @@ def load_custom_css():
         box-sizing: border-box;
     }}
     
-    /* Compact column spacing */
+    /* Compact column spacing - no gaps */
     .stColumns {{
-        gap: var(--grid-3x) !important;
+        gap: 0 !important;
         margin-bottom: var(--content-gap);
+        margin: 0 !important;
+        padding: 0 !important;
     }}
     
     .stColumns > div {{
@@ -327,11 +329,30 @@ def load_custom_css():
         margin-right: 0 !important;
     }}
     
-    /* Fix column alignment */
+    /* Fix column alignment - eliminate gaps */
     .stColumn {{
-        padding: 0 calc(var(--grid-2x) / 2) !important;
+        padding: 0 !important;
         box-sizing: border-box;
         margin: 0 !important;
+        gap: 0 !important;
+    }}
+    
+    /* Eliminate gaps between columns */
+    .stColumns {{
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    
+    /* Ensure no spacing between sidebar and main content */
+    .stColumns > div:first-child {{
+        padding-right: 0 !important;
+        margin-right: 0 !important;
+    }}
+    
+    .stColumns > div:last-child {{
+        padding-left: 0 !important;
+        margin-left: 0 !important;
     }}
     
     /* Ensure buttons are properly centered */
@@ -383,11 +404,63 @@ def load_custom_css():
         margin-right: 0 !important;
     }}
     
+    /* Eliminate gap between sidebar and main content */
+    .main .block-container {{
+        padding-left: var(--grid-2x) !important;
+        margin-left: 0 !important;
+    }}
+    
+    /* Ensure sidebar and main content are connected */
+    .stSidebar {{
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+    }}
+    
+    /* Main content area - no left margin */
+    .main > div:last-child {{
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }}
+    
     /* Additional fixes for dashboard content alignment */
     .stMarkdown h3, .stMarkdown h4 {{
         margin-left: 0 !important;
         margin-right: 0 !important;
         width: 100% !important;
+    }}
+    
+    /* Target main layout columns specifically */
+    .main .stColumns {{
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    
+    /* Ensure main content starts immediately after sidebar */
+    .main .stColumns > div:last-child {{
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+        border-left: none !important;
+    }}
+    
+    /* Remove any Streamlit default spacing */
+    .stApp [data-testid="stSidebar"] + div {{
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }}
+    
+    /* Container-specific gap elimination */
+    .stContainer .stColumns {{
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    
+    /* Ensure container columns have no gaps */
+    .stContainer .stColumn {{
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
     }}
     
     /* Fix any remaining left margin issues */
