@@ -380,14 +380,17 @@ class RealtimeProposalsService:
         if status_filter == 'draft':
             valid_statuses = ['draft', 'idea', 'open']
         elif status_filter == 'active':
-            valid_statuses = ['active', 'review', 'last call']
-        elif status_filter == 'final':
+            valid_statuses = ['active', 'review', 'last call', 'lastcall']  # Handle LASTCALL variation
+        elif status_filter == 'final' or status_filter == 'production':
             valid_statuses = ['final', 'accepted', 'closed']
         elif status_filter == 'withdrawn':
             valid_statuses = ['withdrawn', 'rejected', 'superseded']
+        elif status_filter == 'review':
+            valid_statuses = ['review', 'last call', 'lastcall']
         else:
             return proposals
         
+        # Case-insensitive comparison
         return [p for p in proposals if p.get('status', '').lower() in valid_statuses]
     
     def _get_fallback_proposals(self, protocol: str, limit: int) -> List[Dict]:
