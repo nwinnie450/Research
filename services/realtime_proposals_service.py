@@ -128,6 +128,7 @@ class RealtimeProposalsService:
     def _fetch_proposals_from_github(self, protocol: str, limit: int) -> List[Dict]:
         """Fetch proposals from GitHub API"""
         if protocol not in self.repositories:
+            st.error(f"🔍 Debug: Protocol {protocol} not found in repositories")
             return []
         
         repo_config = self.repositories[protocol]
@@ -136,16 +137,20 @@ class RealtimeProposalsService:
         
         # Get repository contents
         url = f"https://api.github.com/repos/{repo}/contents/{path}" if path else f"https://api.github.com/repos/{repo}/contents"
+        st.info(f"🔍 Debug: Fetching from URL: {url}")
         
         response = self.session.get(url)
         response.raise_for_status()
         
         files = response.json()
+        st.info(f"🔍 Debug: Found {len(files)} files in {protocol} repository")
         
         # Filter proposal files
         proposal_files = []
         prefix = repo_config['prefix']
         extension = repo_config['file_extension']
+        
+        st.info(f"🔍 Debug: Looking for files with prefix '{prefix}' and extension '{extension}'")
         
         for file in files:
             if (file['type'] == 'file' and 
@@ -153,9 +158,13 @@ class RealtimeProposalsService:
                 file['name'].endswith(extension)):
                 proposal_files.append(file)
         
+        st.info(f"🔍 Debug: Found {len(proposal_files)} matching proposal files")
+        
         # Sort by name (which includes number) and get latest
         proposal_files.sort(key=lambda x: self._extract_proposal_number(x['name']), reverse=True)
         proposal_files = proposal_files[:limit]
+        
+        st.info(f"🔍 Debug: Processing {len(proposal_files)} proposals (limited to {limit})")
         
         # Fetch details for each proposal
         proposals = []
