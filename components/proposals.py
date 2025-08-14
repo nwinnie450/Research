@@ -805,15 +805,20 @@ def display_proposals_table(proposals: List[Dict], is_search: bool = False):
     df_data = []
     for proposal in proposals:
         file_url = proposal.get('file_url', '')
+        ptype = proposal.get('type', 'Unknown')
+        number = proposal.get('number', 'N/A')
+        
+        # Create clickable proposal number
+        proposal_link = file_url if file_url else '#'
         
         df_data.append({
-            'Type': proposal.get('type', 'Unknown'),
-            'Number': proposal.get('number', 'N/A'),
-            'Title': proposal.get('title', 'No title')[:50] + '...' if len(proposal.get('title', '')) > 50 else proposal.get('title', 'No title'),
+            'Proposal': proposal_link,  # This will be the clickable proposal number
+            'Title': proposal.get('title', 'No title')[:60] + '...' if len(proposal.get('title', '')) > 60 else proposal.get('title', 'No title'),
             'Status': proposal.get('status', 'Unknown'),
-            'Author': proposal.get('author', 'Unknown')[:20] + '...' if len(proposal.get('author', '')) > 20 else proposal.get('author', 'Unknown'),
+            'Type': ptype,
+            'Author': proposal.get('author', 'Unknown')[:25] + '...' if len(proposal.get('author', '')) > 25 else proposal.get('author', 'Unknown'),
             'Created': proposal.get('created', 'Unknown'),
-            'View': file_url if file_url else '#'
+            'Number_Display': f"{ptype}-{number}"  # For display purposes
         })
     
     df = pd.DataFrame(df_data)
@@ -824,13 +829,18 @@ def display_proposals_table(proposals: List[Dict], is_search: bool = False):
         use_container_width=True,
         hide_index=True,
         column_config={
-            "Type": st.column_config.TextColumn("Type", width="small"),
-            "Number": st.column_config.TextColumn("Number", width="small"),
-            "Title": st.column_config.TextColumn("Title", width="medium"),
+            "Proposal": st.column_config.LinkColumn(
+                "Proposal", 
+                width="medium",
+                help="Click to view the full proposal on GitHub",
+                display_text="Number_Display"
+            ),
+            "Title": st.column_config.TextColumn("Title", width="large"),
             "Status": st.column_config.TextColumn("Status", width="small"),
-            "Author": st.column_config.TextColumn("Author", width="small"),
+            "Type": st.column_config.TextColumn("Type", width="small"),
+            "Author": st.column_config.TextColumn("Author", width="medium"),
             "Created": st.column_config.TextColumn("Date", width="small"),
-            "View": st.column_config.LinkColumn("📖 View", width="small", help="Click to view the full proposal on GitHub")
+            "Number_Display": None  # Hide this column as it's used for display text
         }
     )
     
