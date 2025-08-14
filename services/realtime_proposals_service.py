@@ -104,11 +104,16 @@ class RealtimeProposalsService:
     
     def get_latest_proposals(self, protocol: str, limit: int = 10, status_filter: str = None, sort_by: str = 'number') -> List[Dict]:
         """Get latest proposals for a protocol"""
+        st.info(f"🔍 Debug: get_latest_proposals called - protocol={protocol}, limit={limit}, status_filter={status_filter}, sort_by={sort_by}")
+        
         cache_key = f"{protocol}_{limit}_{status_filter}"
         
-        # Check cache
-        if self._is_cached(cache_key):
+        # Check cache (temporarily disable for debugging)
+        if False and self._is_cached(cache_key):
+            st.info(f"🔍 Debug: Using cached data for {cache_key}")
             return self.cache[cache_key]['data']
+        else:
+            st.info(f"🔍 Debug: No cache hit, fetching fresh data for {cache_key}")
         
         try:
             proposals = self._fetch_proposals_from_github(protocol, limit, sort_by, status_filter)
