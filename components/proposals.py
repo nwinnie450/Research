@@ -804,6 +804,8 @@ def display_proposals_table(proposals: List[Dict], is_search: bool = False):
     # Convert to DataFrame for better display
     df_data = []
     for proposal in proposals:
+        file_url = proposal.get('file_url', '')
+        
         df_data.append({
             'Type': proposal.get('type', 'Unknown'),
             'Number': proposal.get('number', 'N/A'),
@@ -811,7 +813,7 @@ def display_proposals_table(proposals: List[Dict], is_search: bool = False):
             'Status': proposal.get('status', 'Unknown'),
             'Author': proposal.get('author', 'Unknown')[:20] + '...' if len(proposal.get('author', '')) > 20 else proposal.get('author', 'Unknown'),
             'Created': proposal.get('created', 'Unknown'),
-            'Link': proposal.get('file_url', '#')
+            'View': file_url if file_url else '#'
         })
     
     df = pd.DataFrame(df_data)
@@ -828,9 +830,22 @@ def display_proposals_table(proposals: List[Dict], is_search: bool = False):
             "Status": st.column_config.TextColumn("Status", width="small"),
             "Author": st.column_config.TextColumn("Author", width="small"),
             "Created": st.column_config.TextColumn("Date", width="small"),
-            "Link": st.column_config.LinkColumn("Link", width="small")
+            "View": st.column_config.LinkColumn("📖 View", width="small", help="Click to view the full proposal on GitHub")
         }
     )
+    
+    # Quick access links
+    if proposals and len(proposals) <= 10:
+        st.markdown("#### 🔗 Quick Links")
+        cols = st.columns(min(len(proposals), 5))
+        
+        for i, proposal in enumerate(proposals[:10]):
+            with cols[i % 5]:
+                file_url = proposal.get('file_url', '')
+                if file_url:
+                    number = proposal.get('number', 'N/A')
+                    ptype = proposal.get('type', 'TIP')
+                    st.markdown(f"[{ptype}-{number}]({file_url})")
     
     # Proposal statistics
     if len(proposals) > 1:
