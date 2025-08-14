@@ -88,15 +88,17 @@ def render_proposals_interface():
         with col2:
             st.markdown("#### Sort & Filter")
             
-            # Sorting option
-            sort_option = st.selectbox(
-                "Sort by:",
-                options=["Latest by Number", "Latest by Date"],
-                index=0,
-                help="Sort proposals by number (TIP-4906 first) or creation date (2024+ first)"
-            )
-            
-            sort_by = 'date' if sort_option == "Latest by Date" else 'number'
+            # Sorting option (only show if realtime is available)
+            if REALTIME_AVAILABLE:
+                sort_option = st.selectbox(
+                    "Sort by:",
+                    options=["Latest by Number", "Latest by Date"],
+                    index=0,
+                    help="Sort proposals by number (TIP-4906 first) or creation date (2024+ first)"
+                )
+                sort_by = 'date' if sort_option == "Latest by Date" else 'number'
+            else:
+                sort_by = 'number'  # Default for non-realtime mode
             
             # Status filter
             status_options = {
@@ -169,12 +171,21 @@ def render_proposals_interface():
                         for proposal_type in proposal_types:
                             if proposal_type in protocol_map:
                                 protocol = protocol_map[proposal_type]
-                                proposals = realtime_proposals.get_latest_proposals(
-                                    protocol, 
-                                    limit=limit_results,
-                                    status_filter=status_filter,
-                                    sort_by=sort_by
-                                )
+                                try:
+                                    # Try with sort_by parameter (newer version)
+                                    proposals = realtime_proposals.get_latest_proposals(
+                                        protocol, 
+                                        limit=limit_results,
+                                        status_filter=status_filter,
+                                        sort_by=sort_by
+                                    )
+                                except TypeError:
+                                    # Fallback for older version without sort_by parameter
+                                    proposals = realtime_proposals.get_latest_proposals(
+                                        protocol, 
+                                        limit=limit_results,
+                                        status_filter=status_filter
+                                    )
                                 
                                 # Add type information
                                 for proposal in proposals:
