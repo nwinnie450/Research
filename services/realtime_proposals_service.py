@@ -112,10 +112,18 @@ class RealtimeProposalsService:
         
         try:
             proposals = self._fetch_proposals_from_github(protocol, limit, sort_by)
+            st.info(f"🔍 Debug: Fetched {len(proposals)} proposals before status filtering")
+            
+            # Debug: Show first few proposal statuses
+            if proposals:
+                for i, p in enumerate(proposals[:3]):
+                    st.info(f"🔍 Debug: Proposal {i+1} - Status: '{p.get('status', 'Unknown')}'")
             
             # Apply status filter
             if status_filter and status_filter != 'all':
+                st.info(f"🔍 Debug: Applying status filter: '{status_filter}'")
                 proposals = self._filter_by_status(proposals, status_filter)
+                st.info(f"🔍 Debug: {len(proposals)} proposals after status filtering")
             
             # Cache results
             self._cache_data(cache_key, proposals)
