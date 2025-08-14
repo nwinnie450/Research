@@ -19,21 +19,34 @@ class RealtimeProposalsService:
         self.session = requests.Session()
         self.session.timeout = 10
         
-        # GitHub API authentication with debug info
-        self.github_token = (
-            os.getenv('GITHUB_TOKEN') or 
-            st.secrets.get('GITHUB_TOKEN', '') if hasattr(st, 'secrets') else ''
-        )
+        # GitHub API authentication with multiple fallback methods
+        self.github_token = None
         
-        # Debug token loading (for troubleshooting)
-        if hasattr(st, 'secrets') and 'GITHUB_TOKEN' in st.secrets:
-            token_preview = st.secrets['GITHUB_TOKEN'][:20] + '...' if st.secrets['GITHUB_TOKEN'] else 'EMPTY'
-            st.info(f"🔍 Debug: Token from secrets: {token_preview}")
-        elif os.getenv('GITHUB_TOKEN'):
-            token_preview = os.getenv('GITHUB_TOKEN')[:20] + '...'
-            st.info(f"🔍 Debug: Token from env: {token_preview}")
-        else:
-            st.error("🔍 Debug: No token found in secrets or environment!")
+        # Try multiple ways to get the token
+        try:
+            # Method 1: Direct secrets access
+            if hasattr(st, 'secrets') and hasattr(st.secrets, 'GITHUB_TOKEN'):
+                self.github_token = st.secrets.GITHUB_TOKEN
+                st.info(f"🔍 Debug: Token from st.secrets.GITHUB_TOKEN: {self.github_token[:20]}...")
+            # Method 2: Dictionary-style access
+            elif hasattr(st, 'secrets') and 'GITHUB_TOKEN' in st.secrets:
+                self.github_token = st.secrets['GITHUB_TOKEN']
+                st.info(f"🔍 Debug: Token from st.secrets['GITHUB_TOKEN']: {self.github_token[:20]}...")
+            # Method 3: Environment variable
+            elif os.getenv('GITHUB_TOKEN'):
+                self.github_token = os.getenv('GITHUB_TOKEN')
+                st.info(f"🔍 Debug: Token from environment: {self.github_token[:20]}...")
+            else:
+                st.error("🔍 Debug: No token found in any location!")
+                st.error(f"🔍 Secrets available: {list(st.secrets.keys()) if hasattr(st, 'secrets') else 'No secrets'}")
+        except Exception as e:
+            st.error(f"🔍 Debug: Error loading token: {str(e)}")
+            self.github_token = None
+        
+        # Clean the token (remove quotes and whitespace)
+        if self.github_token:
+            self.github_token = str(self.github_token).strip().strip('"').strip("'")
+            st.success(f"🔍 Debug: Cleaned token: {self.github_token[:20]}...")
         
         if self.github_token:
             self.session.headers.update({
