@@ -83,7 +83,7 @@ class RealtimeProposalsService:
             'tron': {
                 'name': 'TRON Improvement Proposals (TIPs)',
                 'repo': 'tronprotocol/TIPs',
-                'path': 'tip',
+                'path': '',
                 'website': 'https://tip.tronprotocol.org/',
                 'prefix': 'tip-',
                 'file_extension': '.md'
