@@ -346,33 +346,149 @@ def render_standard_proposals(standard_data: Dict, filter_config: Dict):
         export_proposals_data(items, standard)
 
 def render_detailed_proposals(items: List[Dict], standard: str):
-    """Render detailed view of proposals"""
+    """Render detailed view of proposals with timeline and status tracking"""
     
     st.markdown(f"#### Detailed {standard} Information")
     
     for i, item in enumerate(items[:5]):  # Show first 5 in detail
         with st.expander(f"{standard}-{item.get('number', 'N/A')}: {item.get('title', 'No title')}", expanded=False):
+            # Status timeline visualization
+            render_proposal_timeline(item)
+            
             col1, col2 = st.columns(2)
             
             with col1:
                 st.markdown("**Basic Information:**")
                 st.markdown(f"- **Number:** {item.get('number', 'N/A')}")
-                st.markdown(f"- **Status:** {item.get('status', 'Unknown')}")
+                
+                # Enhanced status display with color coding
+                status = item.get('status', 'Unknown')
+                status_color = get_status_color(status)
+                st.markdown(f"- **Status:** :{status_color}[{status}]")
+                
                 st.markdown(f"- **Type:** {item.get('type', 'Not specified')}")
                 st.markdown(f"- **Category:** {item.get('category', 'Not specified')}")
+                
+                # Timeline information
+                if item.get('created'):
+                    st.markdown(f"- **Created:** {item.get('created')}")
+                if item.get('last_modified'):
+                    st.markdown(f"- **Last Modified:** {item.get('last_modified')}")
             
             with col2:
-                st.markdown("**Links:**")
-                if item.get('link'):
-                    st.markdown(f"[📖 View Proposal]({item['link']})")
+                st.markdown("**Links & Author:**")
+                if item.get('link') or item.get('file_url'):
+                    link_url = item.get('file_url') or item.get('link')
+                    st.markdown(f"[📖 View Proposal]({link_url})")
                 if item.get('discussions_link'):
                     st.markdown(f"[💬 Discussions]({item['discussions_link']})")
                 if item.get('author'):
                     st.markdown(f"- **Author:** {item['author']}")
+                
+                # Status progression tracking
+                render_status_progression(item, standard)
             
             if item.get('summary'):
                 st.markdown("**Summary:**")
                 st.markdown(item['summary'])
+
+def render_proposal_timeline(proposal: Dict):
+    """Render a visual timeline for proposal status"""
+    status = proposal.get('status', '').lower()
+    
+    # Define status progression for different proposal types
+    status_stages = {
+        'draft': 1,
+        'review': 2, 
+        'last call': 3,
+        'final': 4,
+        'living': 4,
+        'active': 4,
+        'production': 4,
+        'stagnant': 0,
+        'withdrawn': 0,
+        'rejected': 0
+    }
+    
+    current_stage = status_stages.get(status, 1)
+    
+    # Timeline visualization
+    stages = ['Draft', 'Review', 'Last Call', 'Final/Active']
+    cols = st.columns(len(stages))
+    
+    for i, (col, stage) in enumerate(zip(cols, stages)):
+        with col:
+            if i + 1 <= current_stage:
+                if status in ['stagnant', 'withdrawn', 'rejected']:
+                    st.markdown(f"🔴 {stage}")
+                else:
+                    st.markdown(f"✅ {stage}")
+            elif i + 1 == current_stage + 1:
+                st.markdown(f"🟡 {stage}")
+            else:
+                st.markdown(f"⚪ {stage}")
+
+def render_status_progression(proposal: Dict, standard: str):
+    """Render status progression information"""
+    status = proposal.get('status', 'Unknown')
+    
+    st.markdown("**Status Information:**")
+    
+    # Status-specific information
+    if status.lower() == 'draft':
+        st.info("📝 This proposal is in early draft stage")
+    elif status.lower() in ['review', 'proposed']:
+        st.info("🔍 This proposal is under review")
+    elif status.lower() in ['final', 'active', 'production']:
+        st.success("✅ This proposal is finalized")
+    elif status.lower() == 'living':
+        st.info("🔄 This is a living document that can be updated")
+    elif status.lower() in ['stagnant', 'withdrawn', 'rejected']:
+        st.warning("⚠️ This proposal is no longer active")
+    
+    # Show next steps based on status
+    next_steps = get_next_steps(status, standard)
+    if next_steps:
+        st.markdown(f"**Next Steps:** {next_steps}")
+
+def get_status_color(status: str) -> str:
+    """Get color for status display"""
+    status_lower = status.lower()
+    
+    color_map = {
+        'draft': 'blue',
+        'review': 'orange', 
+        'proposed': 'orange',
+        'last call': 'violet',
+        'final': 'green',
+        'active': 'green',
+        'production': 'green',
+        'living': 'green',
+        'stagnant': 'gray',
+        'withdrawn': 'red',
+        'rejected': 'red'
+    }
+    
+    return color_map.get(status_lower, 'gray')
+
+def get_next_steps(status: str, standard: str) -> str:
+    """Get next steps based on current status"""
+    status_lower = status.lower()
+    
+    next_steps_map = {
+        'draft': 'Awaiting community feedback and peer review',
+        'review': 'Under evaluation by core developers',
+        'proposed': 'Gathering community consensus',
+        'last call': 'Final review period before decision',
+        'final': 'Implementation in progress',
+        'active': 'Currently implemented and active',
+        'living': 'Document maintained and updated as needed',
+        'stagnant': 'No recent activity - may need revival',
+        'withdrawn': 'No longer being pursued',
+        'rejected': 'Not accepted for implementation'
+    }
+    
+    return next_steps_map.get(status_lower, '')
 
 def export_proposals_data(items: List[Dict], standard: str):
     """Export proposals data as downloadable file"""
