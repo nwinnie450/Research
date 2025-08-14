@@ -12,7 +12,14 @@ from typing import Dict, List
 import time
 from datetime import datetime, timedelta
 from config import BLOCKCHAIN_PROTOCOLS
-from services.realtime_analytics_service import realtime_service
+
+# Try to import realtime service, fallback to None if not available
+try:
+    from services.realtime_analytics_service import realtime_service
+    REALTIME_AVAILABLE = True
+except ImportError:
+    realtime_service = None
+    REALTIME_AVAILABLE = False
 
 def render_analytics():
     """Render advanced analytics dashboard with real-time data"""
@@ -20,48 +27,59 @@ def render_analytics():
     col1, col2 = st.columns([3, 1])
     
     with col1:
-        st.markdown("### 📈 Real-Time Analytics")
+        if REALTIME_AVAILABLE:
+            st.markdown("### 📈 Real-Time Analytics")
+        else:
+            st.markdown("### 📈 Analytics Dashboard")
     
     with col2:
-        if st.button("🔄 Refresh Data", help="Refresh live data"):
+        if REALTIME_AVAILABLE and st.button("🔄 Refresh Data", help="Refresh live data"):
             # Clear cache to force refresh
             realtime_service.cache.clear()
             st.rerun()
     
-    # Load real-time protocol data
-    protocols = get_realtime_protocol_data()
+    # Load protocol data (real-time if available, mock otherwise)
+    if REALTIME_AVAILABLE:
+        protocols = get_realtime_protocol_data()
+    else:
+        protocols = get_mock_protocol_data()
+        st.info("📊 **Demo Mode**: Showing mock data for analytics demonstration. Real-time features will be available in production.")
     
     if not protocols:
         st.error("❌ **Unable to load analytics data. Please check your connection.**")
         return
     
-    # Auto-refresh and update time
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.caption(f"📅 Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC")
-    
-    with col2:
-        auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=False, help="Automatically refresh data every 30 seconds")
-    
-    # Real-time status indicator
-    status_col1, status_col2, status_col3 = st.columns([1, 1, 2])
-    
-    with status_col1:
-        st.markdown("🟢 **Live Data**")
-    
-    with status_col2:
-        data_age = 60 - (time.time() % 60)  # Time until next minute
-        st.markdown(f"⏱️ Next update: {int(data_age)}s")
-    
-    with status_col3:
-        if st.button("📊 Market Overview", help="Quick market overview for all protocols"):
-            render_market_overview(protocols)
-    
-    # Auto-refresh functionality
-    if auto_refresh:
-        time.sleep(30)
-        st.rerun()
+    # Status and controls
+    if REALTIME_AVAILABLE:
+        # Auto-refresh and update time
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.caption(f"📅 Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+        
+        with col2:
+            auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=False, help="Automatically refresh data every 30 seconds")
+        
+        # Real-time status indicator
+        status_col1, status_col2, status_col3 = st.columns([1, 1, 2])
+        
+        with status_col1:
+            st.markdown("🟢 **Live Data**")
+        
+        with status_col2:
+            data_age = 60 - (time.time() % 60)  # Time until next minute
+            st.markdown(f"⏱️ Next update: {int(data_age)}s")
+        
+        with status_col3:
+            if st.button("📊 Market Overview", help="Quick market overview for all protocols"):
+                render_market_overview(protocols)
+        
+        # Auto-refresh functionality
+        if auto_refresh:
+            time.sleep(30)
+            st.rerun()
+    else:
+        st.caption(f"📅 Demo data generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC")
     
     # Protocol selector
     protocol_names = [p['name'] for p in protocols]
@@ -83,13 +101,20 @@ def render_analytics():
     render_competitive_positioning(selected_protocol, protocols)
 
 def render_protocol_overview(protocol: Dict):
-    """Render detailed protocol overview with live data"""
+    """Render detailed protocol overview with live or mock data"""
     
-    st.markdown(f"### 🔍 {protocol['name']} Live Overview")
-    
-    # Get live market data
-    market_data = realtime_service.get_live_market_data()
-    protocol_market = market_data.get(protocol['id'], {})
+    if REALTIME_AVAILABLE:
+        st.markdown(f"### 🔍 {protocol['name']} Live Overview")
+        # Get live market data
+        market_data = realtime_service.get_live_market_data()
+        protocol_market = market_data.get(protocol['id'], {})
+    else:
+        st.markdown(f"### 🔍 {protocol['name']} Overview (Demo)")
+        # Use mock market data
+        protocol_market = {
+            'market_cap': protocol.get('market_cap', 0),
+            'change_24h': np.random.uniform(-5, 15)
+        }
     
     # Key metrics cards with live data
     col1, col2, col3, col4 = st.columns(4)
@@ -194,18 +219,24 @@ def render_performance_analysis(protocol: Dict):
     render_network_utilization(protocol)
 
 def render_tps_trend(protocol: Dict):
-    """Render live TPS trend chart"""
+    """Render TPS trend chart (live or mock data)"""
     
-    st.markdown("#### 📊 Live TPS Trend (24 Hours)")
-    
-    # Get live TPS data
-    df = realtime_service.get_live_tps_data(protocol['id'], hours=24)
+    if REALTIME_AVAILABLE:
+        st.markdown("#### 📊 Live TPS Trend (24 Hours)")
+        # Get live TPS data
+        df = realtime_service.get_live_tps_data(protocol['id'], hours=24)
+        title = f"{protocol['name']} - Real-Time Transaction Throughput"
+    else:
+        st.markdown("#### 📊 TPS Trend (Demo Data)")
+        # Generate mock TPS data
+        df = generate_mock_tps_data(protocol, hours=24)
+        title = f"{protocol['name']} - Transaction Throughput (Demo)"
     
     fig = px.line(
         df, 
-        x='timestamp', 
+        x='timestamp' if REALTIME_AVAILABLE else 'time', 
         y='tps',
-        title=f"{protocol['name']} - Real-Time Transaction Throughput"
+        title=title
     )
     
     fig.update_layout(
@@ -231,18 +262,24 @@ def render_tps_trend(protocol: Dict):
     st.plotly_chart(fig, use_container_width=True)
 
 def render_fee_trend(protocol: Dict):
-    """Render live fee trend chart"""
+    """Render fee trend chart (live or mock data)"""
     
-    st.markdown("#### 💰 Live Fee Trend (24 Hours)")
-    
-    # Get live fee data
-    df = realtime_service.get_live_fee_data(protocol['id'], hours=24)
+    if REALTIME_AVAILABLE:
+        st.markdown("#### 💰 Live Fee Trend (24 Hours)")
+        # Get live fee data
+        df = realtime_service.get_live_fee_data(protocol['id'], hours=24)
+        title = f"{protocol['name']} - Real-Time Transaction Fees"
+    else:
+        st.markdown("#### 💰 Fee Trend (Demo Data)")
+        # Generate mock fee data
+        df = generate_mock_fee_data(protocol, hours=24)
+        title = f"{protocol['name']} - Transaction Fees (Demo)"
     
     fig = px.line(
         df,
-        x='timestamp',
+        x='timestamp' if REALTIME_AVAILABLE else 'time',
         y='fee', 
-        title=f"{protocol['name']} - Real-Time Transaction Fees"
+        title=title
     )
     
     fig.update_layout(
@@ -704,6 +741,42 @@ def get_realtime_protocol_data() -> List[Dict]:
                 continue
     
     return protocols
+
+def generate_mock_tps_data(protocol: Dict, hours: int) -> pd.DataFrame:
+    """Generate mock TPS data for charts"""
+    
+    timestamps = pd.date_range(
+        start=datetime.now() - timedelta(hours=hours),
+        end=datetime.now(),
+        freq='H'
+    )
+    
+    base_tps = protocol.get('tps', 100)
+    tps_values = base_tps + np.random.normal(0, base_tps * 0.1, len(timestamps))
+    tps_values = np.maximum(tps_values, base_tps * 0.5)
+    
+    return pd.DataFrame({
+        'time': timestamps,
+        'tps': tps_values
+    })
+
+def generate_mock_fee_data(protocol: Dict, hours: int) -> pd.DataFrame:
+    """Generate mock fee data for charts"""
+    
+    timestamps = pd.date_range(
+        start=datetime.now() - timedelta(hours=hours),
+        end=datetime.now(),
+        freq='H'
+    )
+    
+    base_fee = protocol.get('avg_fee', 1.0)
+    fee_values = base_fee + np.random.normal(0, base_fee * 0.2, len(timestamps))
+    fee_values = np.maximum(fee_values, base_fee * 0.1)
+    
+    return pd.DataFrame({
+        'time': timestamps,
+        'fee': fee_values
+    })
 
 def render_market_overview(protocols: List[Dict]):
     """Render quick market overview for all protocols"""
