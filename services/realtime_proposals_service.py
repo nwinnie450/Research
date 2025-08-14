@@ -19,11 +19,21 @@ class RealtimeProposalsService:
         self.session = requests.Session()
         self.session.timeout = 10
         
-        # GitHub API authentication
+        # GitHub API authentication with debug info
         self.github_token = (
             os.getenv('GITHUB_TOKEN') or 
             st.secrets.get('GITHUB_TOKEN', '') if hasattr(st, 'secrets') else ''
         )
+        
+        # Debug token loading (for troubleshooting)
+        if hasattr(st, 'secrets') and 'GITHUB_TOKEN' in st.secrets:
+            token_preview = st.secrets['GITHUB_TOKEN'][:20] + '...' if st.secrets['GITHUB_TOKEN'] else 'EMPTY'
+            st.info(f"🔍 Debug: Token from secrets: {token_preview}")
+        elif os.getenv('GITHUB_TOKEN'):
+            token_preview = os.getenv('GITHUB_TOKEN')[:20] + '...'
+            st.info(f"🔍 Debug: Token from env: {token_preview}")
+        else:
+            st.error("🔍 Debug: No token found in secrets or environment!")
         
         if self.github_token:
             self.session.headers.update({
