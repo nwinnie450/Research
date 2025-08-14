@@ -819,10 +819,30 @@ def load_custom_css():
         flex-direction: column;
     }}
     
-    .stColumns .stColumn > div {{
-        height: 100%;
+    /* Protocol card container styling */
+    .stContainer {{
+        min-height: 200px;
         display: flex;
         flex-direction: column;
+    }}
+    
+    /* Ensure consistent card heights */
+    .stContainer .stMarkdown {{
+        margin-bottom: 0.5rem !important;
+    }}
+    
+    /* Metrics row alignment */
+    .stContainer .stColumns {{
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }}
+    
+    /* Protocol description consistency */
+    .stContainer .stCaption {{
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+        min-height: 1.2rem !important;
     }}
     
     .protocol-card:hover, .metric-card:hover {{

@@ -37,6 +37,7 @@ def render_dashboard():
             'ecosystem_score': min(data.get('market_cap', 0) / 1e9 * 10, 100),  # Market cap based
             'market_cap': data.get('market_cap', 0),
             'type': 'Layer 1',
+            'consensus': data.get('consensus', 'Proof of Stake'),  # Add consensus info
             'description': f"{data.get('name', '')} - {data.get('consensus', '')} blockchain",
             'suitable_for': ['DeFi', 'Payments'] if data.get('tvl', 0) > 0 else ['Payments'],
             'active_developers': max(50, int(data.get('market_cap', 0) / 1e8))  # Estimate based on mcap
@@ -234,6 +235,28 @@ def render_protocol_card(protocol: Dict):
     fee = protocol.get('avg_fee', 0)
     security = protocol.get('security_score', 0)
     
+    # Standardize protocol descriptions to consistent length
+    def get_standardized_description(protocol):
+        name = protocol.get('name', '')
+        consensus = protocol.get('consensus', '')
+        
+        # Create shorter, consistent descriptions
+        if 'Bitcoin' in name:
+            return "Proof of Work blockchain"
+        elif 'Ethereum' in name:
+            return "Proof of Stake blockchain"
+        elif 'BNB' in name or 'BSC' in name:
+            return "PoS Authority blockchain"
+        elif 'Tron' in name:
+            return "Delegated PoS blockchain"
+        elif 'Base' in name:
+            return "Optimistic Rollup L2"
+        else:
+            # Fallback to shorter version
+            if len(consensus) > 20:
+                return consensus.split()[0] + " blockchain"
+            return consensus if consensus else "Blockchain protocol"
+    
     # Define status colors inline
     def get_status_color(status_type, value):
         if status_type == "tps":
@@ -261,11 +284,17 @@ def render_protocol_card(protocol: Dict):
     
     # Use container and columns instead of HTML for better compatibility
     with st.container():
-        # Protocol header - compact
+        # Protocol header - compact with consistent height
         st.markdown(f"**{protocol['name']} ({protocol['symbol']})**")
-        st.caption(protocol.get('description', 'Leading blockchain protocol'))
         
-        # Metrics in columns - compact
+        # Use standardized description for consistent layout
+        standardized_desc = get_standardized_description(protocol)
+        st.caption(standardized_desc)
+        
+        # Add consistent spacing to ensure metrics alignment
+        st.markdown("")  # Small spacer
+        
+        # Metrics in columns - compact and always aligned
         col1, col2 = st.columns(2)
         
         with col1:
