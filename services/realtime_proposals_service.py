@@ -287,8 +287,17 @@ class RealtimeProposalsService:
                             elif key in ['created', 'date']:
                                 proposal_data['created'] = value
                             elif key == 'tip':
-                                # TIP-specific number field
-                                proposal_data['number'] = value
+                                # TIP-specific number field - but prioritize filename if there's a mismatch
+                                content_number = value
+                                filename_number = self._extract_proposal_number(filename)
+                                
+                                # Use filename number if there's a significant mismatch (repo error)
+                                if abs(int(content_number) - filename_number) > 1:
+                                    proposal_data['number'] = filename_number
+                                    # Keep original for reference
+                                    proposal_data['content_number'] = content_number
+                                else:
+                                    proposal_data['number'] = content_number
                             elif key == 'category':
                                 proposal_data['category'] = value
                             elif key == 'type':
