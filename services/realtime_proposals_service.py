@@ -373,11 +373,22 @@ class RealtimeProposalsService:
                     proposal['protocol'] = protocol
                     results.append(proposal)
         
-        # Sort by relevance (title matches first)
-        results.sort(key=lambda x: (
-            query_lower not in x.get('title', '').lower(),
-            -x.get('number', 0)
-        ))
+        # Sort by relevance (title matches first, then by proposal number)
+        def get_sort_key(proposal):
+            title_match = query_lower not in proposal.get('title', '').lower()
+            # Safely convert number to int for sorting
+            try:
+                number = proposal.get('number', 0)
+                if isinstance(number, str):
+                    # Extract number from string like "eip-7998" -> 7998
+                    import re
+                    match = re.search(r'(\d+)', str(number))
+                    number = int(match.group(1)) if match else 0
+                return (title_match, -int(number))
+            except (ValueError, TypeError):
+                return (title_match, 0)
+        
+        results.sort(key=get_sort_key)
         
         return results[:20]  # Return top 20 matches
     
