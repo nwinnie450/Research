@@ -118,7 +118,7 @@ def render_advanced_search():
             max_latency = st.number_input("Maximum Latency (seconds)", min_value=0.1, max_value=60.0, value=5.0)
             consensus_type = st.multiselect(
                 "Consensus Mechanisms",
-                ["Proof of Work", "Proof of Stake", "Delegated PoS", "Byzantine Fault Tolerance"],
+                ["Proof of Work", "Proof of Stake", "Delegated PoS", "Optimistic Rollup"],
                 default=["Proof of Stake"]
             )
         
@@ -131,22 +131,97 @@ def render_advanced_search():
     # Search button
     if st.button("🔍 Search Protocols", type="primary", use_container_width=True):
         with st.spinner("Searching blockchain protocols..."):
-            # This would integrate with the actual search logic
-            st.success("Found 8 protocols matching your criteria!")
+            # Get real protocol data from the live service
+            from services.live_l1_data_service import LiveL1DataService
+            live_data_service = LiveL1DataService()
+            market_analysis = live_data_service.get_live_l1_market_analysis()
+            protocols_dict = market_analysis.get('protocols', {})
             
-            # Display mock results
-            st.markdown("### Results")
-            for i in range(3):
-                with st.container():
-                    col1, col2, col3, col4 = st.columns(4)
-                    with col1:
-                        st.metric("Protocol", f"Protocol {i+1}")
-                    with col2:
-                        st.metric("TPS", f"{1000*(i+1):,}")
-                    with col3:
-                        st.metric("Fee", f"${0.01*(i+1):.3f}")
-                    with col4:
-                        st.metric("Score", f"{90-i*5}/100")
+            # Convert to searchable format
+            all_protocols = []
+            for protocol_id, data in protocols_dict.items():
+                protocol = {
+                    'id': protocol_id,
+                    'name': data.get('name', protocol_id.title()),
+                    'symbol': data.get('symbol', ''),
+                    'tps': data.get('current_tps', 0),
+                    'avg_fee': data.get('avg_fee_usd', 0),
+                    'consensus': data.get('consensus', 'Proof of Stake'),
+                    'market_cap': data.get('market_cap', 0),
+                    'type': 'Layer 1',
+                    'staking': True if data.get('consensus') in ['Proof of Stake', 'Delegated PoS'] else False
+                }
+                all_protocols.append(protocol)
+            
+            # Apply filters
+            filtered_protocols = []
+            for protocol in all_protocols:
+                # TPS filter
+                if protocol['tps'] < min_tps:
+                    continue
+                
+                # Fee filter
+                if protocol['avg_fee'] > max_fee:
+                    continue
+                
+                # Market cap filter
+                if protocol['market_cap'] / 1e6 < min_market_cap:
+                    continue
+                
+                # Consensus filter
+                if consensus_type and protocol['consensus'] not in consensus_type:
+                    continue
+                
+                # Staking filter
+                if staking_available and not protocol['staking']:
+                    continue
+                
+                filtered_protocols.append(protocol)
+            
+            # Sort by relevance score
+            def calculate_relevance_score(protocol):
+                # Higher TPS, lower fees, higher market cap = better score
+                tps_score = min(protocol['tps'] / 1000, 100)  # Cap at 100
+                fee_score = max(0, 100 - (protocol['avg_fee'] * 10))  # Lower fees = higher score
+                mcap_score = min(protocol['market_cap'] / 1e9 * 10, 100)  # Market cap factor
+                return (tps_score + fee_score + mcap_score) / 3
+            
+            filtered_protocols.sort(key=calculate_relevance_score, reverse=True)
+            
+            # Display results
+            if filtered_protocols:
+                st.success(f"Found {len(filtered_protocols)} protocols matching your criteria!")
+                
+                # Display results in a proper format
+                st.markdown("### 📊 Search Results")
+                
+                # Create results grid
+                cols = st.columns(min(3, len(filtered_protocols)))
+                
+                for i, protocol in enumerate(filtered_protocols):
+                    col = cols[i % len(cols)]
+                    
+                    with col:
+                        with st.container():
+                            st.markdown(f"**{protocol['name']} ({protocol['symbol']})**")
+                            st.caption(f"{protocol['consensus']} blockchain")
+                            
+                            # Metrics
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.metric("TPS", f"{protocol['tps']:,}")
+                                st.metric("Fee", f"${protocol['avg_fee']:.4f}")
+                            with col2:
+                                st.metric("Market Cap", f"${protocol['market_cap']/1e9:.1f}B")
+                                st.metric("Type", protocol['type'])
+                            
+                            # Action button
+                            if st.button(f"Analyze {protocol['name']}", key=f"search_{protocol['id']}", use_container_width=True):
+                                st.session_state.selected_protocol = protocol['id']
+                                st.session_state.current_page = "📈 Analytics"
+                                st.rerun()
+            else:
+                st.warning("No protocols found matching your criteria. Try adjusting your filters.")
 
 if __name__ == "__main__":
     main()
