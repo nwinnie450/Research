@@ -38,23 +38,24 @@ def load_custom_css():
         line-height: var(--line-height-base);
     }}
     
-    /* Content container - Compact padding */
+    /* Content container - Proper spacing to show header */
     .block-container {{
-        padding: var(--grid-2x) var(--grid-3x) !important;
+        padding: var(--grid-4x) var(--grid-3x) var(--grid-2x) var(--grid-3x) !important;
         max-width: 100% !important;
         margin: 0 !important;
         width: 100% !important;
         box-sizing: border-box;
     }}
     
-    /* Main content - Compact spacing */
+    /* Main content - Proper spacing for header visibility */
     .main .block-container {{
         display: block;
         width: 100%;
         max-width: 100%;
-        padding: var(--grid-2x) var(--grid-3x);
+        padding: var(--grid-3x) var(--grid-3x);
         box-sizing: border-box;
         margin: 0;
+        padding-top: var(--grid-4x) !important;
     }}
     
     /* Override Streamlit's container restrictions */
@@ -142,9 +143,10 @@ def load_custom_css():
         flex-direction: column;
     }}
     
-    /* Reduce default Streamlit spacing */
+    /* Adjust default Streamlit spacing */
     .stApp {{
-        margin-top: -80px;
+        margin-top: 0px;
+        padding-top: var(--grid-2x);
     }}
     
     /* TYPOGRAPHY SYSTEM - Compact and prominent */
@@ -252,33 +254,36 @@ def load_custom_css():
         font-weight: 700 !important;
     }}
     
-    /* Header Styles - Compact and Centered */
+    /* Header Styles - Compact and Centered with proper spacing */
     .main-header {{
         background: linear-gradient(90deg, {COLORS['primary_blue']} 0%, {COLORS['secondary_blue']} 100%);
         color: white;
-        padding: 1rem 1.5rem;
+        padding: 1.5rem 2rem;
         border-radius: 8px;
-        margin-bottom: 1rem;
+        margin: var(--grid-2x) 0 1rem 0;
         text-align: center;
         width: 100%;
         box-sizing: border-box;
+        position: relative;
+        z-index: 1;
     }}
     
     .main-header h1 {{
-        margin: 0;
-        font-size: 1.875rem;
-        font-weight: 700;
+        margin: 0 !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
         text-align: center !important;
-        justify-content: center;
-        width: 100%;
+        justify-content: center !important;
+        width: 100% !important;
+        line-height: 1.2 !important;
     }}
     
     .main-header p {{
-        margin: 0.25rem 0 0 0;
-        font-size: 1rem;
+        margin: 0.5rem 0 0 0 !important;
+        font-size: 1.1rem !important;
         opacity: 0.9;
         text-align: center !important;
-        width: 100%;
+        width: 100% !important;
     }}
     
     /* Compact Hero Section - Centered and Full Width */
