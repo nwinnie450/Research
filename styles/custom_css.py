@@ -250,7 +250,7 @@ def load_custom_css():
         font-weight: 700 !important;
     }}
     
-    /* Header Styles - Compact */
+    /* Header Styles - Compact and Centered */
     .main-header {{
         background: linear-gradient(90deg, {COLORS['primary_blue']} 0%, {COLORS['secondary_blue']} 100%);
         color: white;
@@ -258,21 +258,28 @@ def load_custom_css():
         border-radius: 8px;
         margin-bottom: 1rem;
         text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     }}
     
     .main-header h1 {{
         margin: 0;
         font-size: 1.875rem;
         font-weight: 700;
+        text-align: center !important;
+        justify-content: center;
+        width: 100%;
     }}
     
     .main-header p {{
         margin: 0.25rem 0 0 0;
         font-size: 1rem;
         opacity: 0.9;
+        text-align: center !important;
+        width: 100%;
     }}
     
-    /* Compact Hero Section */
+    /* Compact Hero Section - Centered and Full Width */
     .hero-section {{
         text-align: center;
         padding: 1rem;
@@ -280,18 +287,130 @@ def load_custom_css():
         border-radius: 8px;
         margin-bottom: 0.75rem;
         border: 1px solid {COLORS['secondary_blue']}20;
+        width: 100%;
+        box-sizing: border-box;
+        margin-left: 0;
+        margin-right: 0;
     }}
     
     .hero-section h1 {{
         font-size: 1.375rem !important;
         margin-bottom: 0.25rem !important;
         line-height: 1.2 !important;
+        text-align: center !important;
+        width: 100%;
     }}
     
     .hero-section p {{
         font-size: 0.875rem !important;
         margin-bottom: 0.25rem !important;
         line-height: 1.3 !important;
+        text-align: center !important;
+        width: 100%;
+    }}
+    
+    /* Fix left-hand side spacing issues */
+    .main .block-container {{
+        padding: var(--grid-2x) var(--grid-3x) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+    }}
+    
+    /* Ensure content sections are properly aligned */
+    .stMarkdown, .stDataFrame, .stPlotlyChart, .stMetric {{
+        width: 100% !important;
+        margin-bottom: var(--content-gap) !important;
+        box-sizing: border-box;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }}
+    
+    /* Fix column alignment */
+    .stColumn {{
+        padding: 0 calc(var(--grid-2x) / 2) !important;
+        box-sizing: border-box;
+        margin: 0 !important;
+    }}
+    
+    /* Ensure buttons are properly centered */
+    .stButton {{
+        margin: 0 !important;
+        flex: 0 0 auto;
+        width: 100% !important;
+    }}
+    
+    .stButton > button {{
+        width: 100% !important;
+        margin: var(--grid-2x) 0 !important;
+    }}
+    
+    /* Fix main content alignment */
+    .main {{
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: var(--line-height-base);
+        box-sizing: border-box;
+    }}
+    
+    /* Override any Streamlit default margins */
+    .stApp > div:first-child {{
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    
+    [data-testid="stAppViewContainer"] {{
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    
+    /* Fix container margins */
+    .block-container {{
+        padding: var(--grid-2x) var(--grid-3x) !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }}
+    
+    /* Additional fixes for dashboard content alignment */
+    .stMarkdown h3, .stMarkdown h4 {{
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+    }}
+    
+    /* Fix any remaining left margin issues */
+    .stMarkdown > div {{
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+    }}
+    
+    /* Ensure dashboard sections are properly aligned */
+    .dashboard-section {{
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }}
+    
+    /* Fix column content alignment */
+    .stColumn > div {{
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }}
     
     /* Card Styles - Compact */

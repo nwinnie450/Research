@@ -37,8 +37,8 @@ def main():
     # Render header
     render_header()
     
-    # Main layout
-    col1, col2 = st.columns([1, 3])
+    # Main layout - optimized for full width
+    col1, col2 = st.columns([1, 4])
     
     with col1:
         # Render sidebar navigation
