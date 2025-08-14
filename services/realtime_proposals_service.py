@@ -259,9 +259,20 @@ class RealtimeProposalsService:
                                 elif key == 'status':
                                     proposal_data['status'] = value
                                 elif key in ['author', 'authors']:
-                                    proposal_data['author'] = value
+                                    # Handle author format like "name email@domain.com"
+                                    if '@' in value and ' ' in value:
+                                        proposal_data['author'] = value.split()[0]  # Get just the name
+                                    else:
+                                        proposal_data['author'] = value
                                 elif key in ['created', 'date']:
                                     proposal_data['created'] = value
+                                elif key == 'tip':
+                                    # TIP-specific number field
+                                    proposal_data['number'] = value
+                                elif key == 'category':
+                                    proposal_data['category'] = value
+                                elif key == 'type':
+                                    proposal_data['type'] = value
                         
                         # Get summary from body
                         body_lines = [line.strip() for line in body.split('\n') if line.strip()]
