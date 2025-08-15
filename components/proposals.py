@@ -225,6 +225,8 @@ def render_standard_proposals(standard_data: Dict, filter_config: Dict):
     
     if table_data:
         df = pd.DataFrame(table_data)
+        # Reset index to start from 1 instead of 0
+        df.index = range(1, len(df) + 1)
         st.dataframe(df, use_container_width=True, height=400)
         
         # Show detailed view option
@@ -236,12 +238,34 @@ def render_standard_proposals(standard_data: Dict, filter_config: Dict):
         export_proposals_data(items, standard)
 
 def render_detailed_proposals(items: List[Dict], standard: str):
-    """Render detailed view of proposals"""
+    """Render detailed view of proposals with pagination"""
     
     st.markdown(f"#### Detailed {standard} Information")
+    st.markdown(f"**Total Proposals:** {len(items)}")
     
-    for i, item in enumerate(items[:5]):  # Show first 5 in detail
-        with st.expander(f"{standard}-{item.get('number', 'N/A')}: {item.get('title', 'No title')}", expanded=False):
+    # Add pagination for better performance and UX
+    items_per_page = 10
+    total_pages = (len(items) + items_per_page - 1) // items_per_page
+    
+    if total_pages > 1:
+        page = st.selectbox(
+            f"Select page (showing {items_per_page} items per page):",
+            options=list(range(1, total_pages + 1)),
+            format_func=lambda x: f"Page {x} of {total_pages}",
+            key=f"page_selector_{standard}"
+        )
+        start_idx = (page - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        page_items = items[start_idx:end_idx]
+        
+        st.markdown(f"*Showing items {start_idx + 1}-{min(end_idx, len(items))} of {len(items)}*")
+    else:
+        page_items = items
+    
+    # Display all items for the current page
+    for i, item in enumerate(page_items, start=(0 if total_pages <= 1 else (page - 1) * items_per_page)):
+        item_number = i + 1
+        with st.expander(f"#{item_number} - {standard}-{item.get('number', 'N/A')}: {item.get('title', 'No title')}", expanded=False):
             col1, col2 = st.columns(2)
             
             with col1:
@@ -266,10 +290,17 @@ def render_detailed_proposals(items: List[Dict], standard: str):
                     st.markdown(f"[📖 View Proposal]({item['url']})")
                 if item.get('author'):
                     st.markdown(f"- **Author:** {item['author']}")
+                
+                # Additional metadata
+                if item.get('summary'):
+                    st.markdown(f"- **Summary Available:** ✅")
             
             if item.get('description'):
                 st.markdown("**Description:**")
-                st.markdown(item['description'][:200] + ('...' if len(item.get('description', '')) > 200 else ''))
+                st.markdown(item['description'][:300] + ('...' if len(item.get('description', '')) > 300 else ''))
+            elif item.get('summary'):
+                st.markdown("**Summary:**")
+                st.markdown(item['summary'][:300] + ('...' if len(item.get('summary', '')) > 300 else ''))
 
 def get_status_color(status: str) -> str:
     """Get color for status display"""
