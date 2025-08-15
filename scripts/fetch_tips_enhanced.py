@@ -119,8 +119,48 @@ def fetch_single_tip(tip_number, session):
     except Exception as e:
         return None
 
+def get_issue_creation_date(issue_url, session):
+    """Get the actual creation date from a GitHub issue"""
+    try:
+        r = session.get(issue_url, timeout=15)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, 'html.parser')
+        
+        # Look for issue metadata or creation date in various formats
+        # GitHub shows creation date in relative time elements
+        time_elements = soup.find_all('relative-time')
+        if time_elements:
+            # Get the datetime attribute from the first relative-time element
+            datetime_attr = time_elements[0].get('datetime')
+            if datetime_attr:
+                # Convert ISO datetime to YYYY-MM-DD format
+                from datetime import datetime
+                dt = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                return dt.strftime('%Y-%m-%d')
+        
+        # Alternative: look for timestamp in the page
+        for element in soup.find_all(['time', 'span'], class_=True):
+            if 'datetime' in element.attrs:
+                datetime_attr = element['datetime']
+                dt = datetime.fromisoformat(datetime_attr.replace('Z', '+00:00'))
+                return dt.strftime('%Y-%m-%d')
+        
+        # Look for date patterns in text content
+        date_pattern = r'(\d{4}-\d{2}-\d{2})'
+        page_text = soup.get_text()
+        date_matches = re.findall(date_pattern, page_text)
+        if date_matches:
+            # Return the most recent looking date
+            dates = sorted(date_matches, reverse=True)
+            return dates[0]
+            
+    except Exception as e:
+        print(f"  Warning: Could not get creation date from {issue_url}: {e}")
+    
+    return None
+
 def fetch_recent_tip_issues():
-    """Fetch recent TIP proposals from GitHub issues and PRs"""
+    """Fetch recent TIP proposals from GitHub issues and PRs with accurate dates"""
     print("Fetching recent TIP proposals from GitHub issues/PRs...")
     
     session = requests.Session()
@@ -130,38 +170,92 @@ def fetch_recent_tip_issues():
     
     recent_tips = []
     
+    # Known recent TIP issues with their issue numbers for more accurate fetching
+    known_recent_tips = [
+        {'number': 7951, 'issue': 785, 'title': 'TIP-7951: Precompile for secp256r1 Curve Support'},
+        {'number': 7702, 'issue': None, 'title': 'TIP-7702: Add a new tx type that permanently sets the code for an EOA'},
+        {'number': 6963, 'issue': None, 'title': 'TIP-6963: Multi Injected Provider Discovery'},
+        {'number': 6780, 'issue': None, 'title': 'TIP-6780: SELFDESTRUCT only in same transaction'},
+        {'number': 772, 'issue': 772, 'title': 'TIP-772: SRs produce blocks strictly in descending order of votes'},
+        {'number': 767, 'issue': None, 'title': 'TIP-767: Transitioning proposal expire time configuration to Chain Governance'}
+    ]
+    
     try:
-        # Get recent issues from the repository
+        # First, try to get accurate dates for known recent TIPs
+        print("Getting accurate dates for known recent TIPs...")
+        for tip_info in known_recent_tips:
+            tip_number = tip_info['number']
+            issue_number = tip_info.get('issue')
+            title = tip_info['title']
+            
+            # Try to get the issue creation date
+            created_date = '2025-01-01'  # Default fallback
+            
+            if issue_number:
+                issue_url = f"https://github.com/tronprotocol/TIPs/issues/{issue_number}"
+                actual_date = get_issue_creation_date(issue_url, session)
+                if actual_date:
+                    created_date = actual_date
+                    print(f"  TIP-{tip_number}: Found creation date {created_date}")
+            
+            tip_object = {
+                'title': title,
+                'status': 'Draft',
+                'author': 'Unknown',
+                'created': created_date,
+                'type': 'Proposal',
+                'category': 'Enhancement',
+                'id': f'TIP-{tip_number}',
+                'number': tip_number,
+                'url': f"https://github.com/tronprotocol/TIPs/issues/{issue_number}" if issue_number else f"https://github.com/tronprotocol/TIPs/issues",
+                'file_url': f"https://github.com/tronprotocol/TIPs/issues/{issue_number}" if issue_number else f"https://github.com/tronprotocol/TIPs/issues",
+                'protocol': 'tron',
+                'summary': f"{title} - Draft TIP proposal",
+                'source': 'https://github.com/tronprotocol/TIPs/issues'
+            }
+            
+            recent_tips.append(tip_object)
+        
+        # Also scrape the issues page for any additional TIPs we might have missed
+        print("Scanning issues page for additional TIPs...")
         issues_url = "https://github.com/tronprotocol/TIPs/issues"
         r = session.get(issues_url, timeout=30)
         r.raise_for_status()
         soup = BeautifulSoup(r.text, 'html.parser')
         
-        # Find issue links
+        # Find issue links that we haven't already processed
+        existing_numbers = {tip['number'] for tip in recent_tips}
+        
         for link in soup.find_all('a', href=True):
             href = link.get('href', '')
             text = link.get_text(strip=True)
             
             # Look for TIP proposals in recent issues
             if '/issues/' in href and ('TIP-' in text or 'Proposal:' in text):
-                # Extract TIP number if present
                 tip_match = re.search(r'TIP-(\d+)', text)
                 if tip_match:
                     tip_number = int(tip_match.group(1))
                     
-                    # Get issue creation date and other details
+                    # Skip if we already have this TIP
+                    if tip_number in existing_numbers:
+                        continue
+                    
+                    # Extract issue number from URL
+                    issue_match = re.search(r'/issues/(\d+)', href)
+                    issue_number = int(issue_match.group(1)) if issue_match else None
+                    
+                    # Get issue creation date
+                    created_date = '2024-01-01'  # Default
                     issue_url = f"https://github.com{href}" if href.startswith('/') else href
                     
-                    # Try to extract creation date from the issue page
-                    created_date = '2024-01-01'  # Default for issues
-                    
-                    # Check if this is a recent TIP (higher numbers are usually newer)
-                    if tip_number > 700:  # Focus on recent TIPs
-                        created_date = '2025-01-01'  # More recent default for high-numbered TIPs
+                    actual_date = get_issue_creation_date(issue_url, session)
+                    if actual_date:
+                        created_date = actual_date
+                        print(f"  TIP-{tip_number}: Found creation date {created_date}")
                     
                     tip_object = {
                         'title': text,
-                        'status': 'Draft',  # Issues are typically drafts
+                        'status': 'Draft',
                         'author': 'Unknown',
                         'created': created_date,
                         'type': 'Proposal',

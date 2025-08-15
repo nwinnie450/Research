@@ -1,6 +1,6 @@
 {
-  "generated_at": 1755222800,
-  "generated_at_iso": "2025-08-15 01:53:20 UTC",
+  "generated_at": 1755225673,
+  "generated_at_iso": "2025-08-15 02:41:13 UTC",
   "count": 123,
   "protocol": "tron",
   "source": "https://github.com/tronprotocol/tips + https://github.com/tronprotocol/TIPs/issues",
@@ -9,7 +9,7 @@
       "title": "TIP-7951: Precompile for secp256r1 Curve Support",
       "status": "Draft",
       "author": "Unknown",
-      "created": "2025-01-01",
+      "created": "2025-07-25",
       "type": "Proposal",
       "category": "Enhancement",
       "id": "TIP-7951",
@@ -29,8 +29,8 @@
       "category": "Enhancement",
       "id": "TIP-7702",
       "number": 7702,
-      "url": "https://github.com/tronprotocol/TIPs/issues/728",
-      "file_url": "https://github.com/tronprotocol/TIPs/issues/728",
+      "url": "https://github.com/tronprotocol/TIPs/issues",
+      "file_url": "https://github.com/tronprotocol/TIPs/issues",
       "protocol": "tron",
       "summary": "TIP-7702: Add a new tx type that permanently sets the code for an EOA - Draft TIP proposal",
       "source": "https://github.com/tronprotocol/TIPs/issues"
@@ -44,8 +44,8 @@
       "category": "Enhancement",
       "id": "TIP-6963",
       "number": 6963,
-      "url": "https://github.com/tronprotocol/TIPs/issues/737",
-      "file_url": "https://github.com/tronprotocol/TIPs/issues/737",
+      "url": "https://github.com/tronprotocol/TIPs/issues",
+      "file_url": "https://github.com/tronprotocol/TIPs/issues",
       "protocol": "tron",
       "summary": "TIP-6963: Multi Injected Provider Discovery - Draft TIP proposal",
       "source": "https://github.com/tronprotocol/TIPs/issues"
@@ -59,8 +59,8 @@
       "category": "Enhancement",
       "id": "TIP-6780",
       "number": 6780,
-      "url": "https://github.com/tronprotocol/TIPs/issues/765",
-      "file_url": "https://github.com/tronprotocol/TIPs/issues/765",
+      "url": "https://github.com/tronprotocol/TIPs/issues",
+      "file_url": "https://github.com/tronprotocol/TIPs/issues",
       "protocol": "tron",
       "summary": "TIP-6780: SELFDESTRUCT only in same transaction - Draft TIP proposal",
       "source": "https://github.com/tronprotocol/TIPs/issues"
@@ -141,10 +141,10 @@
       "source": "https://github.com/tronprotocol/tips"
     },
     {
-      "title": "TIP-772: SRs produce blocks strictly in descending order of votes at the beginning of epoch",
+      "title": "TIP-772: SRs produce blocks strictly in descending order of votes",
       "status": "Draft",
       "author": "Unknown",
-      "created": "2025-01-01",
+      "created": "2025-06-20",
       "type": "Proposal",
       "category": "Enhancement",
       "id": "TIP-772",
@@ -152,7 +152,7 @@
       "url": "https://github.com/tronprotocol/TIPs/issues/772",
       "file_url": "https://github.com/tronprotocol/TIPs/issues/772",
       "protocol": "tron",
-      "summary": "TIP-772: SRs produce blocks strictly in descending order of votes at the beginning of epoch - Draft TIP proposal",
+      "summary": "TIP-772: SRs produce blocks strictly in descending order of votes - Draft TIP proposal",
       "source": "https://github.com/tronprotocol/TIPs/issues"
     },
     {
@@ -164,8 +164,8 @@
       "category": "Enhancement",
       "id": "TIP-767",
       "number": 767,
-      "url": "https://github.com/tronprotocol/TIPs/issues/767",
-      "file_url": "https://github.com/tronprotocol/TIPs/issues/767",
+      "url": "https://github.com/tronprotocol/TIPs/issues",
+      "file_url": "https://github.com/tronprotocol/TIPs/issues",
       "protocol": "tron",
       "summary": "TIP-767: Transitioning proposal expire time configuration to Chain Governance - Draft TIP proposal",
       "source": "https://github.com/tronprotocol/TIPs/issues"
@@ -654,7 +654,7 @@
       "title": "TIP-404:Enable NFT with native liquidity and fractionalization capabilities",
       "status": "Draft",
       "author": "Unknown",
-      "created": "2024-01-01",
+      "created": "2025-02-14",
       "type": "Proposal",
       "category": "Enhancement",
       "id": "TIP-404",
