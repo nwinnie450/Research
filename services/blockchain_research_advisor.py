@@ -5,8 +5,9 @@ Enhanced with real-time L1 data integration while maintaining proposal functiona
 import re
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
-from services.latest_proposals_fetcher import LatestProposalsFetcher
+# from services.latest_proposals_fetcher import LatestProposalsFetcher  # Removed - replaced by scraped data
 from services.l1_market_analyzer import L1ProtocolMarketAnalyzer
+from services.scraped_data_service import scraped_data_service
 
 class BlockchainResearchAdvisor:
     """
@@ -15,7 +16,7 @@ class BlockchainResearchAdvisor:
     """
     
     def __init__(self):
-        self.proposals_fetcher = LatestProposalsFetcher()
+        # self.proposals_fetcher = LatestProposalsFetcher()  # Removed - replaced by scraped data
         self.market_analyzer = L1ProtocolMarketAnalyzer()
         
         # Enhanced research areas mapping for intent analysis
@@ -144,49 +145,28 @@ class BlockchainResearchAdvisor:
         response = header
         
         try:
-            # Fetch all proposals at once
-            all_proposals_result = self.proposals_fetcher.fetch_latest_proposals(proposal_types, status_filter)
-            standards_data = all_proposals_result.get('standards', [])
-            
-            # Convert to easier lookup format
+            # Use scraped data service for proposals
             proposals_by_type = {}
-            for standard_data in standards_data:
-                standard_name = standard_data.get('standard', '')
-                proposals_by_type[standard_name] = standard_data.get('items', [])
+            protocol_map = {
+                'EIP': 'ethereum',
+                'BIP': 'bitcoin', 
+                'TIP': 'tron',
+                'BEP': 'binance_smart_chain'
+            }
+            
+            for proposal_type in proposal_types:
+                if proposal_type in protocol_map:
+                    protocol = protocol_map[proposal_type]
+                    proposals = scraped_data_service.get_latest_proposals(
+                        protocol, 
+                        limit=10,
+                        status_filter=status_filter
+                    )
+                    proposals_by_type[proposal_type] = proposals
             
             for proposal_type in proposal_types:
                 proposals = proposals_by_type.get(proposal_type, [])
-                
-                # Filter by status if specified
-                if status_filter and proposals:
-                    filtered_proposals = []
-                    for proposal in proposals:
-                        proposal_status = proposal.get('status', '').lower()
-                        if status_filter == 'production' and proposal_status in ['final', 'active', 'production', 'candidate', 'enabled', 'closed']:
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'draft' and proposal_status in ['draft', 'open']:
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'proposed' and proposal_status in ['proposed', 'proposal']:
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'candidate' and proposal_status == 'candidate':
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'enabled' and proposal_status == 'enabled':
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'review' and proposal_status in ['review', 'last call']:
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'withdrawn' and proposal_status in ['withdrawn', 'rejected', 'abandoned']:
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'superseded' and proposal_status in ['superseded', 'replaced']:
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'living' and proposal_status == 'living':
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'stagnant' and proposal_status == 'stagnant':
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'open' and proposal_status == 'open':
-                            filtered_proposals.append(proposal)
-                        elif status_filter == 'closed' and proposal_status == 'closed':
-                            filtered_proposals.append(proposal)
-                    proposals = filtered_proposals
+                # Status filtering is now handled by scraped_data_service
                 
                 if proposals:
                     status_text = f" ({status_filter.title()} Status)" if status_filter else " (Latest 5)"
@@ -197,12 +177,13 @@ class BlockchainResearchAdvisor:
                     for proposal in proposals[:limit]:
                         number = proposal.get('number', 'N/A')
                         title = proposal.get('title', f'{proposal_type} {number}')
-                        link = proposal.get('link', '#')
+                        url = proposal.get('url', '#')
                         status = proposal.get('status', 'Unknown')
+                        author = proposal.get('author', 'Unknown')
                         
                         response += f"• **{proposal_type}-{number}**: {title}\n"
-                        response += f"  - Status: {status}\n"
-                        response += f"  - Link: {link}\n\n"
+                        response += f"  - Status: {status} | Author: {author}\n"
+                        response += f"  - [📖 View Proposal]({url})\n\n"
                 else:
                     status_text = f" with {status_filter} status" if status_filter else ""
                     response += f"## {proposal_type}s\n\n❌ No {proposal_type}s found{status_text} at this time.\n\n"

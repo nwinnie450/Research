@@ -6,7 +6,7 @@ import re
 import json
 from typing import Dict, List, Optional, Any, Tuple
 from services.governance_data_service import GovernanceDataService
-from services.latest_proposals_fetcher import LatestProposalsFetcher
+# from services.latest_proposals_fetcher import LatestProposalsFetcher  # Removed - replaced by scraped data
 from services.blockchain_research_advisor import BlockchainResearchAdvisor
 import streamlit as st
 
@@ -18,7 +18,7 @@ class CustomBlockchainAIAgent:
     
     def __init__(self):
         self.governance_service = GovernanceDataService()
-        self.proposals_fetcher = LatestProposalsFetcher()
+        # self.proposals_fetcher = LatestProposalsFetcher()  # Removed - replaced by scraped data
         self.research_advisor = BlockchainResearchAdvisor()
         self.conversation_context = []
         
